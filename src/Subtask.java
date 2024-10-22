@@ -1,45 +1,29 @@
-public class Subtask {
-    private int id;
-    private String name;
-    private String description;
+public class Subtask extends Task{
     private Status status;
+    private int epicId;
 
-    public Subtask(String name, String description, int id) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+    public Subtask(String name, String description) {
+        super(name, description);
         status = Status.NEW;
+    }
+
+    public void setEpicId(int epicId) {
+        this.epicId = epicId;
+    }
+
+    public int getEpicId() {
+        return epicId;
     }
 
     @Override
     public String toString() {
-        String result = "\n" + "       SubtaskId: " + this.id + "\n" +
-                "       Title: " + this.name + "\n" +
-                "       Description: " + this.description + "\n" +
-                "       Status: " + this.status + "\n";
+        String result = "\n" + "SubtaskId: " + this.getId() + "\n" +
+                "EpicId: " + getEpicId() + "\n" +
+                "Title: " + this.getName() + "\n" +
+                "Description: " + this.getDescription() + "\n" +
+                "Subtask.Status: " + this.getStatus() + "\n";
 
         return result;
     }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public int getId() {
-        return id;
-    }
-
 
 }

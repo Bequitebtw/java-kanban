@@ -1,8 +1,23 @@
+import java.util.Objects;
+
 public class Task {
     private String name;
     private String description;
     private int id;
     private Status status;
+
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        status = Status.NEW;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -12,23 +27,30 @@ public class Task {
         this.description = description;
     }
 
+
     public void setStatus(Status status) {
         this.status = status;
     }
 
-    public Task(String name, String description, int id) {
-        this.name = name;
-        this.description = description;
-        this.id = id;
-        status = Status.NEW;
+    public String getName() {
+        return name;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
 
     @Override
     public String toString() {
-        String result = "TaskId: " + this.id + "\n" +
+        String result = "\nTaskId: " + this.id + "\n" +
                 "Title: " + this.name + "\n" +
                 "Description: " + this.description + "\n" +
-                "Status: " + this.status;
+                "Task.Status: " + this.status + "\n";
         System.out.println();
         return result;
     }

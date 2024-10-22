@@ -3,116 +3,162 @@ import java.util.*;
 public class TaskManager {
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Epic> epics;
+    private HashMap<Integer, Subtask> subtasks;
+
     private int idCounter;
 
     public TaskManager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
-        idCounter = 1;
+        subtasks = new HashMap<>();
+        idCounter = 0;
+    }
+
+    public void createTask(Task task) {
+        task.setId(idCounter);
+
+        if (task.getClass().equals(Task.class)) {
+            tasks.put(idCounter, task);
+            idCounter++;
+        } else {
+            System.out.println("не тот объект");
+        }
+
+    }
+
+    public void createEpic(Epic epic) {
+        epic.setId(idCounter);
+        epics.put(idCounter, epic);
+        idCounter++;
+    }
+
+    public void createSubtask(Subtask subtask, int epicId) {
+        if (!epics.containsKey(epicId)) {
+            System.out.println("Нет такого эпика!");
+            return;
+        }
+        subtask.setEpicId(epicId);
+        subtask.setId(idCounter);
+        subtasks.put(idCounter, subtask);
+        epics.get(epicId).addSubtaskId(idCounter);
+        checkSubtasksStatus(epicId);
+        idCounter++;
+    }
+
+    public ArrayList<Task> getTasks() {
+        ArrayList<Task> allTasks = new ArrayList<>();
+        allTasks.addAll(tasks.values());
+        allTasks.addAll(epics.values());
+        allTasks.addAll(subtasks.values());
+        return allTasks;
     }
 
     public void deleteTaskById(int id) {
-        tasks.remove(id);
-        epics.remove(id);
-        for (Epic epic : epics.values()) {
-            for (Subtask subtask : epic.getSubtasks().values()) {
-                if (subtask.getId() == id) {
-                    epic.getSubtasks().remove(id);
-                    epic.checkStatus();
-                    return;
-                }
-            }
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+        } else if (epics.containsKey(id)) {
+            epics.remove(id);
+        } else if (subtasks.containsKey(id)) {
+            subtasks.remove(id);
+            checkSubtasksStatus(subtasks.get(id).getEpicId());
+        } else {
+            System.out.println("Нет такого таска");
         }
     }
 
     public void clearTasks() {
         tasks.clear();
         epics.clear();
+        subtasks.clear();
     }
 
-    public void createTask(TaskType type, String name, String description) {
-        switch (type) {
-            case TASK -> tasks.put(idCounter, new Task(name, description, idCounter));
-            case EPIC -> epics.put(idCounter, new Epic(name, description, idCounter));
-            default -> System.out.println("Нет такого варианта");
-        }
-        idCounter++;
-    }
-
-    public void getTaskById(int id) {  // Отдельно выводит все обычные такски, эпики вместе с подзадачами, подзадачи
-        for (Map.Entry<Integer, Epic> taskEntry : epics.entrySet()) {
-            if (taskEntry.getKey().equals(id)) {
-                System.out.println(taskEntry.getValue());
-                return;
-            }
-        }
-
-        for (Map.Entry<Integer, Task> taskEntry : tasks.entrySet()) {
-            if (taskEntry.getKey().equals(id)) {
-                System.out.println(taskEntry.getValue());
-                return;
-            }
-        }
-        for (Map.Entry<Integer, Epic> taskEntry : epics.entrySet()) {
-            for (Map.Entry<Integer, Subtask> subtaskEntry : taskEntry.getValue().getSubtasks().entrySet()) {
-                if (subtaskEntry.getKey().equals(id)) {
-                    System.out.println(subtaskEntry.getValue());
-                    return;
-                }
-
-            }
+    // Можно было разделить на несколько методов, но пришлось бы проверять что передан нужный класс
+    public Task getTaskById(int id) {
+        if (tasks.containsKey(id)) {
+            return tasks.get(id);
+        } else if (epics.containsKey(id)) {
+            return epics.get(id);
+        } else if (subtasks.containsKey(id)) {
+            return subtasks.get(id);
+        } else {
+            System.out.println("Нет такого таска");
+            return null;
         }
     }
 
-    public void createSubtask(int epicId, String name, String description) {
-        try {
-            epics.get(epicId).addSubtask(name, description, idCounter);
-        } catch (NullPointerException e) {
-            System.out.println("Нет такого эпика: " + epicId);
-        }
-        idCounter++;
-    }
-
-    public void getTasks() {
-        for (Map.Entry<Integer, Task> taskEntry : tasks.entrySet()) {
-            System.out.println(taskEntry.getValue());
-        }
-
-        for (Map.Entry<Integer, Epic> taskEntry : epics.entrySet()) {
-            System.out.println(taskEntry.getValue());
+    // Тоже самое как при получении таска
+    public void updateTask(int taskId,String name,String description,Status status) {
+        if (tasks.containsKey(taskId)) {
+            setNewFields(tasks.get(taskId),name,description,status);
+        } else if (epics.containsKey(taskId)) {
+            setNewFields(epics.get(taskId),name,description,status);
+            checkEpicStatus(taskId);
+        } else if (subtasks.containsKey(taskId)) {
+            setNewFields(subtasks.get(taskId),name,description,status);
+            checkSubtasksStatus(subtasks.get(taskId).getEpicId());
+        } else {
+            System.out.println("Нет такого таска");
         }
     }
 
-    public void updateTask(int id, String name, String description, Status status) {
-        for (Epic epic : epics.values()) {
-            for (Subtask subtask : epic.getSubtasks().values()) {
-                if (subtask.getId() == id) {
-                    subtask.setStatus(status);
-                    subtask.setDescription(description);
-                    subtask.setName(name);
-                    epic.checkStatus();
-                    return;
-                }
+    // думаю с этим методом код выглядит менее загруженно
+    private void setNewFields(Task task,String name,String description,Status status) {
+        task.setName(name);
+        task.setDescription(description);
+        task.setStatus(status);
+    }
+
+
+    /*  Не работает метод (не знаю как сделать правильно)
+     *  Когда метод не переопределен в Epic, меняется status только у
+     *  сабтаксов, когда переопределен, меняется только status epic, но не сабтаски
+     */
+
+    private void checkEpicStatus(int epicId) {
+        if (epics.get(epicId).getStatus().equals(Status.DONE)) {
+            for (Subtask subtask : getEpicSubtasksById(epicId)) {
+                subtask.setStatus(Status.DONE);
+            }
+        }
+        if (epics.get(epicId).getStatus().equals(Status.IN_PROGRESS)) {
+            for (Subtask subtask : getEpicSubtasksById(epicId)) {
+                subtask.setStatus(Status.IN_PROGRESS);
+            }
+        }
+    }
+
+    private void checkSubtasksStatus(int epicId) {
+
+        boolean isDone = true;
+        boolean inProgress = false;
+        for (Subtask subtask : getEpicSubtasksById(epicId)) {
+            if (!subtask.getStatus().equals(Status.DONE) ) {
+                isDone = false;
+            } if (subtask.getStatus().equals(Status.IN_PROGRESS)) {
+                inProgress = true;
+                break;
             }
         }
 
-        for (Map.Entry<Integer, Task> taskEntry : tasks.entrySet()) {
-            if (taskEntry.getKey().equals(id)) {
-                taskEntry.getValue().setName(name);
-                taskEntry.getValue().setDescription(description);
-                taskEntry.getValue().setStatus(status);
+        if (isDone) {
+            epics.get(epicId).setStatus(Status.DONE);
+        } else if (inProgress) {
+            epics.get(epicId).setStatus(Status.IN_PROGRESS);
+        }
+    }
 
-            }
+    public ArrayList<Subtask> getEpicSubtasksById(int id) {
+        ArrayList<Subtask> epicSubtasks = new ArrayList<>();
+
+        if (!epics.containsKey(id)) {
+            System.out.println("Нет такого эпика");
+            return null;
+        }
+        for (Integer x : epics.get(id).getSubtasks()) {
+            epicSubtasks.add(subtasks.get(x));
         }
 
-        for (Map.Entry<Integer, Epic> epicEntry : epics.entrySet()) {
-            if (epicEntry.getKey().equals(id)) {
-                epicEntry.getValue().setName(name);
-                epicEntry.getValue().setDescription(description);
-                epicEntry.getValue().setStatus(status);
-                epicEntry.getValue().checkStatus();
-            }
-        }
+        return epicSubtasks;
     }
 
 }
