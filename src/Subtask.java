@@ -17,11 +17,11 @@ public class Subtask extends Task{
 
     @Override
     public String toString() {
-        String result = "\n" + "SubtaskId: " + this.getId() + "\n" +
-                "EpicId: " + getEpicId() + "\n" +
-                "Title: " + this.getName() + "\n" +
-                "Description: " + this.getDescription() + "\n" +
-                "Subtask.Status: " + this.getStatus() + "\n";
+        String result = "\n" + "       SubtaskId: " + this.getId() + "\n" +
+                "       EpicId: " + getEpicId() + "\n" +
+                "       Title: " + this.getName() + "\n" +
+                "       Description: " + this.getDescription() + "\n" +
+                "       Subtask.Status: " + this.getStatus() + "\n";
 
         return result;
     }

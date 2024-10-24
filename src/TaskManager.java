@@ -4,7 +4,6 @@ public class TaskManager {
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, Subtask> subtasks;
-
     private int idCounter;
 
     public TaskManager() {
@@ -53,14 +52,38 @@ public class TaskManager {
         return allTasks;
     }
 
+    public void getTasksSOUT() {
+        System.out.println(tasks);
+        for (Map.Entry<Integer,Epic> epicEntry : epics.entrySet()){
+            System.out.println(epicEntry.getValue());
+            for (int x : epicEntry.getValue().getSubtasks()) {
+                for (Map.Entry<Integer,Subtask> subtaskEntry : subtasks.entrySet()) {
+                    if (subtaskEntry.getKey() == x) {
+                        System.out.println(subtaskEntry.getValue());
+                    }
+                }
+            }
+        }
+    }
+
     public void deleteTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
         } else if (epics.containsKey(id)) {
+            for(Integer subtaskId : epics.get(id).getSubtasks()) {
+                subtasks.remove(subtaskId);
+            }
             epics.remove(id);
         } else if (subtasks.containsKey(id)) {
+            int epicId = subtasks.get(id).getEpicId();
+            ArrayList<Integer> epicSubtasks = epics.get(epicId).getSubtasks();
+            for(int x = 0;x < epicSubtasks.size();x++){
+                if(id == epicSubtasks.get(x)) {
+                    epicSubtasks.remove(x);
+                }
+            }
             subtasks.remove(id);
-            checkSubtasksStatus(subtasks.get(id).getEpicId());
+            checkSubtasksStatus(epicId);
         } else {
             System.out.println("Нет такого таска");
         }
@@ -107,12 +130,6 @@ public class TaskManager {
         task.setDescription(description);
         task.setStatus(status);
     }
-
-
-    /*  Не работает метод (не знаю как сделать правильно)
-     *  Когда метод не переопределен в Epic, меняется status только у
-     *  сабтаксов, когда переопределен, меняется только status epic, но не сабтаски
-     */
 
     private void checkEpicStatus(int epicId) {
         if (epics.get(epicId).getStatus().equals(Status.DONE)) {
