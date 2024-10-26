@@ -1,5 +1,6 @@
+package Tasks;
+
 public class Subtask extends Task{
-    private Status status;
     private int epicId;
 
     public Subtask(String name, String description) {
@@ -21,7 +22,7 @@ public class Subtask extends Task{
                 "       EpicId: " + getEpicId() + "\n" +
                 "       Title: " + this.getName() + "\n" +
                 "       Description: " + this.getDescription() + "\n" +
-                "       Subtask.Status: " + this.getStatus() + "\n";
+                "       Tasks.Subtask.Tasks.Status: " + this.getStatus() + "\n";
 
         return result;
     }

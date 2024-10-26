@@ -1,6 +1,12 @@
+import Tasks.Epic;
+import Tasks.Status;
+import Tasks.Subtask;
+import Tasks.Task;
+
 public class TaskTracker {
     public static void main(String[] args) {
 
+        //Как с вами можно связать, если есть вопросы?
         TaskManager taskManager = new TaskManager();
 
         Task task1 = new Task("TASK1","DESK1TASK");
@@ -10,6 +16,7 @@ public class TaskTracker {
         Subtask subtask1 = new Subtask("SUBTASK1","DESK1SUBTASK");
         Subtask subtask2 = new Subtask("SUBTASK2","DESK2SUBTASK");
         Subtask subtask3 = new Subtask("SUBTASK3","DESK3SUBTASK");
+        Task task = new Task("asdas","sdasdda");
 
         //создание
         taskManager.createEpic(epic1); //0
@@ -21,12 +28,12 @@ public class TaskTracker {
         taskManager.createSubtask(subtask3, 1); //6
 
         //Вывод
-        taskManager.getTasksSOUT();
+        taskManager.printAllTypesOfTasks();
 
         //Обновление
         //таски
         taskManager.updateTask(2,"SUPDATETASK1","TASKUP3",Status.DONE);
-        taskManager.updateTask(3,"SUPDATETASK2","TASKUP3",Status.IN_PROGRESS);
+        taskManager.updateTask(3,"SUPDATETASK2","TASKUP3", Status.IN_PROGRESS);
         //сабтаски
         taskManager.updateTask(4,"SUPDATETASK3","TASKUP3",Status.DONE);
         taskManager.updateTask(5,"SUPDATETASK3","TASKUP3",Status.DONE);
@@ -35,20 +42,18 @@ public class TaskTracker {
 
         System.out.println("--------------------");
         //Вывод
-        taskManager.getTasksSOUT();
-        taskManager.updateTask(5,"SUPDATETASK3","TASKUP3",Status.IN_PROGRESS);
+        taskManager.printAllTypesOfTasks();
 
         //удаление
         // эпиков
-        taskManager.deleteTaskById(1);
+        taskManager.deleteEpicById(0);
         // таксков
         taskManager.deleteTaskById(2);
         // сабтасков
-        taskManager.deleteTaskById(5);
-
+        taskManager.deleteSubtaskById(5);
 
         System.out.println("--------------------");
-        taskManager.getTasksSOUT();
+        taskManager.printAllTypesOfTasks();
 
     }
 

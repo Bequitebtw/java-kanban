@@ -1,8 +1,10 @@
+package Tasks;
+
 public class Task {
-    private String name;
-    private String description;
-    private int id;
-    private Status status;
+    protected String name;
+    protected String description;
+    protected int id;
+    protected Status status;
 
     public Task(String name, String description) {
         this.name = name;
@@ -48,7 +50,7 @@ public class Task {
         String result = "\nTaskId: " + this.id + "\n" +
                 "Title: " + this.name + "\n" +
                 "Description: " + this.description + "\n" +
-                "Task.Status: " + this.status + "\n";
+                "Tasks.Task.Tasks.Status: " + this.status + "\n";
         System.out.println();
         return result;
     }
