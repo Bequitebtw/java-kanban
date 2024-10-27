@@ -1,7 +1,7 @@
-import Tasks.Epic;
-import Tasks.Status;
-import Tasks.Subtask;
-import Tasks.Task;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
 
 import java.util.*;
 
@@ -94,7 +94,7 @@ public class TaskManager {
             checkSubtasksStatus(epicId);
             return;
         }
-        System.out.println("Нет такого сабтаска");
+        System.out.println("Нет такого сабтаска" + id);
     }
 
     public void deleteEpicById(int id) {
@@ -114,33 +114,63 @@ public class TaskManager {
         subtasks.clear();
     }
 
-
-    // Можно было разделить на несколько методов, но пришлось бы проверять что передан нужный класс
     public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
             return tasks.get(id);
-        } else if (epics.containsKey(id)) {
-            return epics.get(id);
-        } else if (subtasks.containsKey(id)) {
-            return subtasks.get(id);
         } else {
             System.out.println("Нет такого таска");
             return null;
         }
     }
 
-    // Тоже самое как при получении таска
-    public void updateTask(int taskId,String name,String description,Status status) {
+    public Task getEpicById(int id) {
+        if (epics.containsKey(id)) {
+            return epics.get(id);
+        } else {
+            System.out.println("Нет такого эпика");
+            return null;
+        }
+    }
+
+    public Task getSubtaskById(int id) {
+        if (subtasks.containsKey(id)) {
+            return subtasks.get(id);
+        } else {
+            System.out.println("Нет такого сабтаска");
+            return null;
+        }
+    }
+
+    //Как метод обновления может иметь только 1 аргумент, как понять какой таск ты обновляешь?
+    public void updateTask(Task task,int taskId) {
         if (tasks.containsKey(taskId)) {
-            setNewFields(tasks.get(taskId),name,description,status);
-        } else if (epics.containsKey(taskId)) {
-            setNewFields(epics.get(taskId),name,description,status);
-            checkEpicStatus(taskId);
-        } else if (subtasks.containsKey(taskId)) {
-            setNewFields(subtasks.get(taskId),name,description,status);
-            checkSubtasksStatus(subtasks.get(taskId).getEpicId());
+            tasks.get(taskId).setStatus(task.getStatus());
+            tasks.get(taskId).setDescription(task.getDescription());
+            tasks.get(taskId).setName(task.getName());
         } else {
             System.out.println("Нет такого таска");
+        }
+    }
+
+    public void updateEpic (Epic epic,int epicId) {
+        if (epics.containsKey(epicId)) {
+            epics.get(epicId).setStatus(epic.getStatus());
+            epics.get(epicId).setDescription(epic.getDescription());
+            epics.get(epicId).setName(epic.getName());
+            checkSubtasksStatus(epicId);
+        } else {
+            System.out.println("Нет такого эпика");
+        }
+    }
+
+    public void updateSubtask (Subtask subtask,int subtaskId) {
+        if (subtasks.containsKey(subtaskId)) {
+            subtasks.get(subtaskId).setStatus(subtask.getStatus());
+            subtasks.get(subtaskId).setDescription(subtask.getDescription());
+            subtasks.get(subtaskId).setName(subtask.getName());
+            checkSubtasksStatus(subtasks.get(subtaskId).getEpicId());
+        } else {
+            System.out.println("Нет такого сабтаска" + subtaskId);
         }
     }
 
@@ -151,21 +181,7 @@ public class TaskManager {
         task.setStatus(status);
     }
 
-    private void checkEpicStatus(int epicId) {
-        if (epics.get(epicId).getStatus().equals(Status.DONE)) {
-            for (Subtask subtask : getEpicSubtasksById(epicId)) {
-                subtask.setStatus(Status.DONE);
-            }
-        }
-        if (epics.get(epicId).getStatus().equals(Status.IN_PROGRESS)) {
-            for (Subtask subtask : getEpicSubtasksById(epicId)) {
-                subtask.setStatus(Status.IN_PROGRESS);
-            }
-        }
-    }
-
     private void checkSubtasksStatus(int epicId) {
-
         boolean isNew = false;
         boolean isDone = true;
         boolean inProgress = false;
