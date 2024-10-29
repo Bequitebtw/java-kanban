@@ -6,7 +6,7 @@ import tasks.Task;
 public class TaskTracker {
     public static void main(String[] args) {
 
-        //Как с вами можно связать, если есть вопросы?
+
         TaskManager taskManager = new TaskManager();
 
         Task task1 = new Task("TASK1","DESK1TASK");
@@ -18,57 +18,62 @@ public class TaskTracker {
         Subtask subtask3 = new Subtask("SUBTASK3","DESK3SUBTASK");
 
 
+        //создание
+        taskManager.createEpic(epic1); //1
+        taskManager.createEpic(epic2); //2
+        taskManager.createTask(task1); //3
+        taskManager.createTask(task2); //4
+        taskManager.createSubtask(subtask1,epic1.getId()); //5
+        taskManager.createSubtask(subtask2,epic1.getId()); //6
+        taskManager.createSubtask(subtask3, epic2.getId()); //7
+
         //Таски для обновления
 
-        Task task3 = new Task("NEWTASK3","NEWNEW3");
-        Task task4 = new Task("NEWTASK4","NEWNEW4");
-        Epic epic3 = new Epic("NEWEPIC3","NEWNEW3");
-        Epic epic4 = new Epic("NEWEPIC4","NEWNEW4");
-        Subtask subtask4 = new Subtask("NEWSUB4","NEWNEW4");
-        Subtask subtask5 = new Subtask("NEWSUB5","NEWNEW5");
-        task3.setStatus(Status.IN_PROGRESS);
-        subtask4.setStatus(Status.IN_PROGRESS);
-        subtask5.setStatus(Status.DONE);
-        epic3.setStatus(Status.DONE);
+        Task updateTask1 = new Task("UPDATETASK1","NEWNEW1");
+        updateTask1.setId(task1.getId());
+        Task updateTask2 = new Task("UPDATETASK2","NEWNEW2");
+        updateTask2.setId(task2.getId());
+        Epic updateEpic1 = new Epic("UPDATEEPIC1","NEWNEW1");
+        updateEpic1.setId(epic1.getId());
+        Epic updateEpic2 = new Epic("UPDATEEPIC2","NEWNEW2");
+        updateEpic2.setId(epic2.getId());
+        Subtask updateSubtask1 = new Subtask("UPDATESUBTASK1","NEWNEW1");
+        updateSubtask1.setId(subtask1.getId());
+        Subtask updateSubtask3 = new Subtask("UPDATESUBTASK3","NEWNEW2=3");
+        updateSubtask3.setId(subtask3.getId());
 
-        //создание
-        taskManager.createEpic(epic1); //0
-        taskManager.createEpic(epic2); //1
-        taskManager.createTask(task1); //2
-        taskManager.createTask(task2); //3
-        taskManager.createSubtask(subtask1,0); //4
-        taskManager.createSubtask(subtask2,0); //5
-        taskManager.createSubtask(subtask3, 1); //6
-        taskManager.createSubtask(subtask5, 1); //7
 
+        //Как с вами можно связать, если есть вопросы?
 
         //Вывод
         taskManager.printAllTypesOfTasks();
 
         //Обновление
+        updateTask1.setStatus(Status.DONE);
+        updateSubtask3.setStatus(Status.DONE);
+        updateSubtask1.setStatus(Status.DONE);
 
         //таски
-        taskManager.updateTask(task3,2);
-        taskManager.updateTask(task4,3);
+        taskManager.updateTask(updateTask1);
+        taskManager.updateTask(updateTask2);
         //сабтаски
-        taskManager.updateSubtask(subtask4,4);
-        taskManager.updateSubtask(subtask5,7);
-        //эпики
-        taskManager.updateEpic(epic3,1);
+        taskManager.updateSubtask(updateSubtask1);
+        taskManager.updateSubtask(updateSubtask3);
 
-        System.out.println("--------------------");
+
         //Вывод
         taskManager.printAllTypesOfTasks();
+        System.out.println("--------------------");
 
         //удаление
         // эпиков
-        taskManager.deleteEpicById(0);
+        taskManager.deleteEpicById(epic2.getId());
         // таксков
-        taskManager.deleteSubtaskById(6);
+        taskManager.deleteTaskById(task2.getId());
         // сабтасков
-        taskManager.deleteSubtaskById(5);
+        taskManager.deleteSubtaskById(subtask2.getId());
 
-        System.out.println("--------------------");
+        //Вывод
         taskManager.printAllTypesOfTasks();
 
     }

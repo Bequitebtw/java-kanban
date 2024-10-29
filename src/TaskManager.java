@@ -9,7 +9,7 @@ public class TaskManager {
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, Subtask> subtasks;
-    private int idCounter;
+    private int idCounter = 1;
 
     public TaskManager() {
         tasks = new HashMap<>();
@@ -141,36 +141,49 @@ public class TaskManager {
         }
     }
 
-    //Как метод обновления может иметь только 1 аргумент, как понять какой таск ты обновляешь?
-    public void updateTask(Task task,int taskId) {
-        if (tasks.containsKey(taskId)) {
-            tasks.get(taskId).setStatus(task.getStatus());
-            tasks.get(taskId).setDescription(task.getDescription());
-            tasks.get(taskId).setName(task.getName());
+
+    /* Единственный варинт как я понял это создавать новый объект(c новыми значениями)
+        и присаивать ему айдишник объекта который хочешь обновить
+    */
+    public void updateTask(Task updateTask) {
+        if(tasks.get(updateTask.getId()) == null) {
+            System.out.println("Нет айди у таска");
+            return;
+        }
+        if(tasks.containsKey(updateTask.getId())){
+            Task task = tasks.get(updateTask.getId());
+            setNewFields(task,updateTask.getName(), updateTask.getDescription(),updateTask.getStatus());
         } else {
             System.out.println("Нет такого таска");
         }
+
     }
 
-    public void updateEpic (Epic epic,int epicId) {
-        if (epics.containsKey(epicId)) {
-            epics.get(epicId).setStatus(epic.getStatus());
-            epics.get(epicId).setDescription(epic.getDescription());
-            epics.get(epicId).setName(epic.getName());
-            checkSubtasksStatus(epicId);
+    public void updateEpic (Epic updateEpic) {
+        if(epics.get(updateEpic.getId()) == null) {
+            System.out.println("Нет айди у эпика");
+            return;
+        }
+        if (epics.containsKey(updateEpic.getId())) {
+            Epic epic = epics.get(updateEpic.getId());
+            setNewFields(epic,updateEpic.getName(), updateEpic.getDescription(),updateEpic.getStatus());
+            checkEpicStatus(updateEpic.getId());
         } else {
             System.out.println("Нет такого эпика");
         }
     }
 
-    public void updateSubtask (Subtask subtask,int subtaskId) {
-        if (subtasks.containsKey(subtaskId)) {
-            subtasks.get(subtaskId).setStatus(subtask.getStatus());
-            subtasks.get(subtaskId).setDescription(subtask.getDescription());
-            subtasks.get(subtaskId).setName(subtask.getName());
-            checkSubtasksStatus(subtasks.get(subtaskId).getEpicId());
+    public void updateSubtask (Subtask updateSubtask) {
+        if(subtasks.get(updateSubtask.getId()) == null) {
+            System.out.println("Нет айди у сабтаска");
+            return;
+        }
+        if (subtasks.containsKey(updateSubtask.getId())) {
+            Subtask subtask = subtasks.get(updateSubtask.getId());
+            setNewFields(subtask,updateSubtask.getName(), updateSubtask.getDescription(),updateSubtask.getStatus());
+            checkSubtasksStatus(subtask.getEpicId());
         } else {
-            System.out.println("Нет такого сабтаска" + subtaskId);
+            System.out.println("Нет такого сабтаска");
         }
     }
 
@@ -181,28 +194,36 @@ public class TaskManager {
         task.setStatus(status);
     }
 
+    //Проверка cтатуса эпика для изменения статусов сабтасков т.к при изменение эпика на DONE, сабтаски должны быть DONE
+    private void checkEpicStatus (int id) {
+        if(epics.get(id).getStatus() == Status.DONE) {
+           for(Subtask subtask : getEpicSubtasksById(id)){
+               subtask.setStatus(Status.DONE);
+           }
+        }
+    }
+
+    //Проверка статусов сабтасков для изменения статуса эпика
     private void checkSubtasksStatus(int epicId) {
-        boolean isNew = false;
+        boolean isNew = true;
         boolean isDone = true;
-        boolean inProgress = false;
+
         for (Subtask subtask : getEpicSubtasksById(epicId)) {
-            if (!subtask.getStatus().equals(Status.DONE) ) {
+            Status subtaskStatus = subtask.getStatus();
+            if (subtaskStatus != Status.DONE) {
                 isDone = false;
-            } if (subtask.getStatus().equals(Status.IN_PROGRESS)) {
-                inProgress = true;
-                break;
-            } if (subtask.getStatus().equals(Status.NEW)) {
-                isNew = true;
-                break;
+            }
+            if (subtaskStatus != Status.NEW) {
+                isNew = false;
             }
         }
 
         if (isDone) {
             epics.get(epicId).setStatus(Status.DONE);
-        } else if (inProgress) {
-            epics.get(epicId).setStatus(Status.IN_PROGRESS);
         } else if (isNew) {
             epics.get(epicId).setStatus(Status.NEW);
+        } else if (!isDone && !isNew) {
+            epics.get(epicId).setStatus(Status.IN_PROGRESS);
         }
     }
 
