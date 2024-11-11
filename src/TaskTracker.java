@@ -22,22 +22,35 @@ public class TaskTracker {
         Subtask subtask3 = new Subtask("SUBTASK3","DESK3SUBTASK");
 
         //создание
-        inMemoryTaskManager.createEpic(epic1); //1
-        inMemoryTaskManager.createEpic(epic2); //2
-        inMemoryTaskManager.createTask(task1); //3
-        inMemoryTaskManager.createTask(task2); //4
-        inMemoryTaskManager.createSubtask(subtask1,epic1.getId()); //5
-        inMemoryTaskManager.createSubtask(subtask2,epic1.getId()); //6
-        inMemoryTaskManager.createSubtask(subtask3, epic2.getId()); //7
+//        inMemoryTaskManager.createEpic(epic1); //1
+//        inMemoryTaskManager.createEpic(epic2); //2
+//        inMemoryTaskManager.createSubtask(subtask1,epic1.getId()); //5
+//        inMemoryTaskManager.createSubtask(subtask2,epic1.getId()); //6
+//        inMemoryTaskManager.createSubtask(subtask3, epic2.getId()); //7
 
         //Запрос тасков
-        inMemoryTaskManager.getTaskById(3);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getSubtaskById(5);
-
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getEpicById(1);
+//        inMemoryTaskManager.getSubtaskById(5);
+//        inMemoryTaskManager.getSubtaskById(5);
+//        inMemoryTaskManager.getSubtaskById(5);
+//        inMemoryTaskManager.getSubtaskById(5);
+//        inMemoryTaskManager.clearSubtasks();
+//        System.out.println(inMemoryTaskManager.getEpicSubtasksById(1));
+//        System.out.println(inMemoryTaskManager.getEpicSubtasksById(2));
+//        inMemoryTaskManager.createSubtask(subtask1,1);
         //Истрория
-        System.out.println(inMemoryTaskManager.getHistory());
+//        System.out.println(inMemoryTaskManager.getHistory().size());
+//        System.out.println(inMemoryTaskManager.getHistory());
 
+
+        System.out.println(inMemoryTaskManager.getAllTypesOfTasks());
     }
 
 }

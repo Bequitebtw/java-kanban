@@ -16,7 +16,9 @@ public class Epic extends Task {
     public ArrayList<Integer> getSubtasks() {
         return subtasks;
     }
-
+    public void clearSubtasksId(){
+        subtasks.clear();
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

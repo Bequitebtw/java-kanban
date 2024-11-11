@@ -13,7 +13,10 @@ public interface TaskManager {
     public void deleteTaskById(int id);
     public void deleteSubtaskById (int id);
     public void deleteEpicById(int id);
+    public void clearAllTasks();
     public void clearTasks();
+    public void clearEpics();
+    public void clearSubtasks();
     public Task getTaskById(int id);
     public Task getEpicById(int id);
     public Task getSubtaskById(int id);

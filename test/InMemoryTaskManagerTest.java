@@ -127,20 +127,7 @@ public class InMemoryTaskManagerTest {
 
         Assertions.assertEquals(0,inMemoryTaskManager.getAllTypesOfTasks().size());
     }
-//    @Test
-//    public void getEpicSubtasksById(){
-//        Subtask subtask1 = new Subtask("222","333");
-//        ArrayList<Subtask> epicSubtasks = new ArrayList<>();
-//        epicSubtasks.add(subtask);
-//        epicSubtasks.add(subtask);
-//        epicSubtasks.add(subtask1);
-//        inMemoryTaskManager.createTask(task);
-//        inMemoryTaskManager.createEpic(epic);
-//        inMemoryTaskManager.createSubtask(subtask,2);
-//        inMemoryTaskManager.createSubtask(subtask,2);
-//        inMemoryTaskManager.createSubtask(subtask1,2);
-//        Assertions.assertEquals(epicSubtasks,inMemoryTaskManager.getEpicSubtasksById(2));
-//    }
+
     @Test
     public void getHistoryTest(){
         List<Task> historyList = new ArrayList<>();
@@ -161,6 +148,35 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.getSubtaskById(3);
 
         Assertions.assertEquals(historyList,inMemoryTaskManager.getHistory());
+    }
+
+    //Проверки равенства по айди нет, потому что методы equals сравнивают все поля и проверяются в тестах добавления
+    @Test
+    public void addTaskWithSameId(){
+        task.setId(1);
+        epic.setId(1);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        Assertions.assertEquals(1,inMemoryTaskManager.getTaskById(1).getId());
+        Assertions.assertEquals(2,inMemoryTaskManager.getEpicById(2).getId());
+    }
+    @Test
+    public void addGenerateAndAutomaticId(){
+        task.setId(1);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createSubtask(subtask,1);
+        Assertions.assertEquals(1,inMemoryTaskManager.getEpicById(1).getId());
+        Assertions.assertEquals(2,inMemoryTaskManager.getTaskById(2).getId());
+        Assertions.assertEquals(3,inMemoryTaskManager.getSubtaskById(3).getId());
+    }
+    @Test
+    public void TaskImmutabilityAfterAdd(){
+        task.setStatus(Status.DONE);
+        task.setName("111");
+        task.setDescription("222");
+        inMemoryTaskManager.createTask(task);
+        Assertions.assertEquals(task,inMemoryTaskManager.getTaskById(1));
     }
 
 
