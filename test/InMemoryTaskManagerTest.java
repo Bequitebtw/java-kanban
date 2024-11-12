@@ -234,10 +234,10 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.createSubtask(subtask,2);
         inMemoryTaskManager.getTaskById(1);
         inMemoryTaskManager.getEpicById(2);
-        Assertions.assertEquals(task.getName(),inMemoryTaskManager.getHistory().get(0).getName());
-        Assertions.assertEquals(task.getDescription(),inMemoryTaskManager.getHistory().get(0).getDescription());
-        Assertions.assertEquals(task.getStatus(),inMemoryTaskManager.getHistory().get(0).getStatus());
-        Assertions.assertEquals(task.getId(),inMemoryTaskManager.getHistory().get(0).getId());
+        Assertions.assertEquals(task.getName(),inMemoryTaskManager.getHistory().getFirst().getName());
+        Assertions.assertEquals(task.getDescription(),inMemoryTaskManager.getHistory().getFirst().getDescription());
+        Assertions.assertEquals(task.getStatus(),inMemoryTaskManager.getHistory().getFirst().getStatus());
+        Assertions.assertEquals(task.getId(),inMemoryTaskManager.getHistory().getFirst().getId());
 
     }
 }
