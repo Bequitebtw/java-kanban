@@ -1,7 +1,5 @@
 package tasks;
 
-import java.util.Objects;
-
 public class Subtask extends Task{
     private int epicId;
 
