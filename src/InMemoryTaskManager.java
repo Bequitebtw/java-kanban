@@ -34,26 +34,37 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Epic createEpic(Epic epic) {
+    public Epic createEpic(Task epic) {
         epic.setId(idCounter);
-        epics.put(idCounter, epic);
-        idCounter++;
-        return epic;
+
+        if (epic.getClass().equals(Epic.class)) {
+            epics.put(idCounter, (Epic)epic);
+            idCounter++;
+        } else {
+            System.out.println("не тот объект");
+            return null;
+        }
+        return (Epic)epic;
     }
 
     @Override
-    public Subtask createSubtask(Subtask subtask, int epicId) {
-        if (!epics.containsKey(epicId)) {
-            System.out.println("Нет такого эпика!");
+    public Subtask createSubtask(Task subtask, int epicId) {
+
+        if (subtask.getClass().equals(Subtask.class) && epics.containsKey(epicId)) {
+            Subtask subtask1 = (Subtask)subtask;
+            subtask1.setEpicId(epicId);
+            subtask1.setId(idCounter);
+            subtasks.put(idCounter, (Subtask)subtask);
+            epics.get(epicId).getSubtasks().add(idCounter);
+            checkSubtasksStatus(epicId);
+            idCounter++;
+        } else {
+            System.out.println("не тот объект или нет такого epicId");
             return null;
         }
-        subtask.setEpicId(epicId);
-        subtask.setId(idCounter);
-        subtasks.put(idCounter, subtask);
-        epics.get(epicId).getSubtasks().add(idCounter);
-        checkSubtasksStatus(epicId);
-        idCounter++;
-        return subtask;
+
+        return (Subtask) subtask;
+
     }
 
     @Override

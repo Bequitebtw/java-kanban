@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface TaskManager {
     public Task createTask(Task task);
-    public Epic createEpic(Epic epic);
-    public Subtask createSubtask(Subtask subtask, int epicId);
+    public Epic createEpic(Task epic);
+    public Subtask createSubtask(Task subtask, int epicId);
     public ArrayList<Task> getAllTypesOfTasks();
     public void deleteTaskById(int id);
     public void deleteSubtaskById (int id);

@@ -123,7 +123,7 @@ public class InMemoryTaskManagerTest {
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createSubtask(subtask,2);
-        inMemoryTaskManager.clearTasks();
+        inMemoryTaskManager.clearAllTasks();
 
         Assertions.assertEquals(0,inMemoryTaskManager.getAllTypesOfTasks().size());
     }
@@ -152,7 +152,7 @@ public class InMemoryTaskManagerTest {
 
     //Проверки равенства по айди нет, потому что методы equals сравнивают все поля и проверяются в тестах добавления
     @Test
-    public void addTaskWithSameId(){
+    public void addTaskWithSameIdTest(){
         task.setId(1);
         epic.setId(1);
         inMemoryTaskManager.createTask(task);
@@ -161,7 +161,7 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(2,inMemoryTaskManager.getEpicById(2).getId());
     }
     @Test
-    public void addGenerateAndAutomaticId(){
+    public void addGenerateAndAutomaticIdTest(){
         task.setId(1);
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createTask(task);
@@ -171,7 +171,7 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(3,inMemoryTaskManager.getSubtaskById(3).getId());
     }
     @Test
-    public void TaskImmutabilityAfterAdd(){
+    public void TaskImmutabilityAfterAddTest(){
         task.setStatus(Status.DONE);
         task.setName("111");
         task.setDescription("222");
@@ -179,5 +179,65 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(task,inMemoryTaskManager.getTaskById(1));
     }
 
+    //Раньше метод equals сравнивал все поля, теперь только айди, так написано в тз
+    @Test
+    public void equalityTasksByIdTest(){
+        Task task1 = new Task("Task1","desk");
+        Task task2 = new Task("Task2","desk");
+        task2.setId(1);
+        inMemoryTaskManager.createTask(task1);
+        Assertions.assertEquals(task1,task2);
+    }
 
+    @Test
+    public void equalityEpicsByIdTest(){
+        Epic epic1 = new Epic("Epic1","desk");
+        Epic epic2 = new Epic("Epic2","desk");
+        epic2.setId(1);
+        inMemoryTaskManager.createEpic(epic1);
+        Assertions.assertEquals(epic1,epic2);
+    }
+
+    @Test
+    public void equalitySubtasksByIdTest(){
+        inMemoryTaskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("Subtask1","desk");
+        Subtask subtask2 = new Subtask("Subtask2","desk");
+        subtask2.setId(2);
+        inMemoryTaskManager.createSubtask(subtask1,1);
+        Assertions.assertEquals(subtask1,subtask2);
+    }
+
+    @Test
+    public void addingAnEpicToAnEpicTest(){
+        inMemoryTaskManager.createEpic(epic);
+        Epic epic1 = new Epic("Epic1","desk");
+        Assertions.assertNull(inMemoryTaskManager.createSubtask(epic1,1));
+
+    }
+
+    @Test
+    public void createSubtaskWithinASubtask(){
+        inMemoryTaskManager.createEpic(epic); // id1
+        Subtask subtask1 = new Subtask("Subtask1","desk");
+        Subtask subtask2 = new Subtask("Subtask2","desk");
+
+        inMemoryTaskManager.createSubtask(subtask1,1); //id2  добавления сабтаска в эпик
+        Assertions.assertNull(inMemoryTaskManager.createSubtask(subtask2,2)); // попытка добавить сабтаск в сабтаск
+    }
+
+    // Сохранение предыдущей версии и ее данных
+    @Test
+    public void savingPreviousVersionHistoryTest(){
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubtask(subtask,2);
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getEpicById(2);
+        Assertions.assertEquals(task.getName(),inMemoryTaskManager.getHistory().get(0).getName());
+        Assertions.assertEquals(task.getDescription(),inMemoryTaskManager.getHistory().get(0).getDescription());
+        Assertions.assertEquals(task.getStatus(),inMemoryTaskManager.getHistory().get(0).getStatus());
+        Assertions.assertEquals(task.getId(),inMemoryTaskManager.getHistory().get(0).getId());
+
+    }
 }
