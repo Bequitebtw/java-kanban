@@ -236,7 +236,7 @@ public class InMemoryTaskManagerTest {
 
     }
     @Test
-    public void epicassss(){
+    public void checkSubtasksRemoveWhenEpicWasDeleted(){
 
         ArrayList<Integer>subtasksId = new ArrayList<>();
         subtasksId.add(4);
