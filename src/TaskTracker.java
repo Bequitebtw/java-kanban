@@ -18,36 +18,31 @@ public class TaskTracker {
         Subtask subtask3 = new Subtask("SUBTASK3","DESK3SUBTASK");
 
         // создание
-        inMemoryTaskManager.createEpic(epic1); //1
-        inMemoryTaskManager.createEpic(epic2); //2
+        inMemoryTaskManager.createTask(task1); //1
+        inMemoryTaskManager.createTask(task2); //2
+        inMemoryTaskManager.createEpic(epic1); //3
+        inMemoryTaskManager.createEpic(epic2); //4
         inMemoryTaskManager.createSubtask(subtask1,epic1.getId()); //5
         inMemoryTaskManager.createSubtask(subtask2,epic1.getId()); //6
-        inMemoryTaskManager.createSubtask(subtask3, epic2.getId()); //7
+        inMemoryTaskManager.createSubtask(subtask3,epic1.getId()); //7
 
-        // Запрос тасков
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getEpicById(1);
-        inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.clearSubtasks();
-        System.out.println(inMemoryTaskManager.getEpicSubtasksById(1));
-        System.out.println(inMemoryTaskManager.getEpicSubtasksById(2));
-        inMemoryTaskManager.createSubtask(subtask1,1);
 
-        // Истрория
-        System.out.println(inMemoryTaskManager.getHistory().size());
+        // Проверка на изменение порядка одинаковых элементов в истории
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getTaskById(2);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getEpicById(4);
+        inMemoryTaskManager.getSubtaskById(6);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getSubtaskById(5);
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getTaskById(2);
+        inMemoryTaskManager.getSubtaskById(7);
+
+        inMemoryTaskManager.deleteTaskById(1);
+        inMemoryTaskManager.deleteEpicById(3);
         System.out.println(inMemoryTaskManager.getHistory());
-
-
-        System.out.println(inMemoryTaskManager.getAllTypesOfTasks());
     }
 
 }

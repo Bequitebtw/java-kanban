@@ -133,20 +133,15 @@ public class InMemoryTaskManagerTest {
         List<Task> historyList = new ArrayList<>();
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createSubtask(subtask,2);
+        inMemoryTaskManager.createSubtask(subtask,epic.getId());
 
         historyList.add(task);
         historyList.add(epic);
-        historyList.add(subtask);
-        historyList.add(subtask);
         historyList.add(subtask);
 
         inMemoryTaskManager.getTaskById(1);
         inMemoryTaskManager.getEpicById(2);
         inMemoryTaskManager.getSubtaskById(3);
-        inMemoryTaskManager.getSubtaskById(3);
-        inMemoryTaskManager.getSubtaskById(3);
-
         Assertions.assertEquals(historyList,inMemoryTaskManager.getHistory());
     }
 
@@ -240,4 +235,20 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(task.getId(),inMemoryTaskManager.getHistory().getFirst().getId());
 
     }
+    @Test
+    public void epicassss(){
+
+        ArrayList<Integer>subtasksId = new ArrayList<>();
+        subtasksId.add(4);
+        inMemoryTaskManager.createTask(task); //1
+        inMemoryTaskManager.createEpic(epic);//2
+        Subtask subtask1 = new Subtask("Subtask1","desk");
+        Subtask subtask2 = new Subtask("Subtask2","desk");
+        inMemoryTaskManager.createSubtask(subtask1,epic.getId());//3
+        inMemoryTaskManager.createSubtask(subtask2, epic.getId());//4
+        inMemoryTaskManager.deleteSubtaskById(3);
+        Assertions.assertEquals(subtasksId,epic.getSubtasks());
+
+    }
+
 }
