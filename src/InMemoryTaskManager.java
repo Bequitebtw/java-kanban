@@ -38,23 +38,23 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setId(idCounter);
 
         if (epic.getClass().equals(Epic.class)) {
-            epics.put(idCounter, (Epic)epic);
+            epics.put(idCounter, (Epic) epic);
             idCounter++;
         } else {
             System.out.println("не тот объект");
             return null;
         }
-        return (Epic)epic;
+        return (Epic) epic;
     }
 
     @Override
     public Subtask createSubtask(Task subtask, int epicId) {
 
         if (subtask.getClass().equals(Subtask.class) && epics.containsKey(epicId)) {
-            Subtask subtask1 = (Subtask)subtask;
+            Subtask subtask1 = (Subtask) subtask;
             subtask1.setEpicId(epicId);
             subtask1.setId(idCounter);
-            subtasks.put(idCounter, (Subtask)subtask);
+            subtasks.put(idCounter, (Subtask) subtask);
             epics.get(epicId).getSubtasks().add(idCounter);
             checkSubtasksStatus(epicId);
             idCounter++;
@@ -78,10 +78,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void printAllTypesOfTasks() {
         System.out.println(tasks);
-        for (Map.Entry<Integer, Epic> epicEntry : epics.entrySet()){
+        for (Map.Entry<Integer, Epic> epicEntry : epics.entrySet()) {
             System.out.println(epicEntry.getValue());
             for (int x : epicEntry.getValue().getSubtasks()) {
-                for (Map.Entry<Integer,Subtask> subtaskEntry : subtasks.entrySet()) {
+                for (Map.Entry<Integer, Subtask> subtaskEntry : subtasks.entrySet()) {
                     if (subtaskEntry.getKey() == x) {
                         System.out.println(subtaskEntry.getValue());
                     }
@@ -101,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubtaskById (int id) {
+    public void deleteSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             int epicId = subtasks.get(id).getEpicId();
             ArrayList<Integer> epicSubtasks = epics.get(epicId).getSubtasks();
@@ -149,13 +149,15 @@ public class InMemoryTaskManager implements TaskManager {
         epics.clear();
         subtasks.clear();
     }
+
     @Override
     public void clearSubtasks() {
-        for(Epic e : epics.values()){
+        for (Epic e : epics.values()) {
             e.clearSubtasksId();
         }
         subtasks.clear();
     }
+
     @Override
     public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
@@ -195,13 +197,13 @@ public class InMemoryTaskManager implements TaskManager {
     */
     @Override
     public void updateTask(Task updateTask) {
-        if(tasks.get(updateTask.getId()) == null) {
+        if (tasks.get(updateTask.getId()) == null) {
             System.out.println("Нет айди у таска");
             return;
         }
-        if(tasks.containsKey(updateTask.getId())){
+        if (tasks.containsKey(updateTask.getId())) {
             Task task = tasks.get(updateTask.getId());
-            setNewFields(task,updateTask.getName(), updateTask.getDescription(),updateTask.getStatus());
+            setNewFields(task, updateTask.getName(), updateTask.getDescription(), updateTask.getStatus());
         } else {
             System.out.println("Нет такого таска");
         }
@@ -209,14 +211,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic (Epic updateEpic) {
-        if(epics.get(updateEpic.getId()) == null) {
+    public void updateEpic(Epic updateEpic) {
+        if (epics.get(updateEpic.getId()) == null) {
             System.out.println("Нет айди у эпика");
             return;
         }
         if (epics.containsKey(updateEpic.getId())) {
             Epic epic = epics.get(updateEpic.getId());
-            setNewFields(epic,updateEpic.getName(), updateEpic.getDescription(),updateEpic.getStatus());
+            setNewFields(epic, updateEpic.getName(), updateEpic.getDescription(), updateEpic.getStatus());
             checkEpicStatus(updateEpic.getId());
         } else {
             System.out.println("Нет такого эпика");
@@ -224,14 +226,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask (Subtask updateSubtask) {
-        if(subtasks.get(updateSubtask.getId()) == null) {
+    public void updateSubtask(Subtask updateSubtask) {
+        if (subtasks.get(updateSubtask.getId()) == null) {
             System.out.println("Нет айди у сабтаска");
             return;
         }
         if (subtasks.containsKey(updateSubtask.getId())) {
             Subtask subtask = subtasks.get(updateSubtask.getId());
-            setNewFields(subtask,updateSubtask.getName(), updateSubtask.getDescription(),updateSubtask.getStatus());
+            setNewFields(subtask, updateSubtask.getName(), updateSubtask.getDescription(), updateSubtask.getStatus());
             checkSubtasksStatus(subtask.getEpicId());
         } else {
             System.out.println("Нет такого сабтаска");
@@ -239,18 +241,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // думаю с этим методом код выглядит менее загруженно
-    private void setNewFields(Task task,String name,String description,Status status) {
+    private void setNewFields(Task task, String name, String description, Status status) {
         task.setName(name);
         task.setDescription(description);
         task.setStatus(status);
     }
 
     //Проверка cтатуса эпика для изменения статусов сабтасков т.к при изменение эпика на DONE, сабтаски должны быть DONE
-    private void checkEpicStatus (int id) {
-        if(epics.get(id).getStatus() == Status.DONE) {
-           for(Subtask subtask : getEpicSubtasksById(id)){
-               subtask.setStatus(Status.DONE);
-           }
+    private void checkEpicStatus(int id) {
+        if (epics.get(id).getStatus() == Status.DONE) {
+            for (Subtask subtask : getEpicSubtasksById(id)) {
+                subtask.setStatus(Status.DONE);
+            }
         }
     }
 
@@ -294,7 +296,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task>getHistory(){
+    public List<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
     }
 
