@@ -3,7 +3,7 @@ package tasks;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer>subtasks;
+    private ArrayList<Integer> subtasks;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -14,7 +14,8 @@ public class Epic extends Task {
     public ArrayList<Integer> getSubtasks() {
         return subtasks;
     }
-    public void clearSubtasksId(){
+
+    public void clearSubtasksId() {
         subtasks.clear();
     }
 
