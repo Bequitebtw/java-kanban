@@ -33,8 +33,16 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     //удаление ноды
     private void removeNode(Node node) {
-
-        if (head == null) { //проверка на null всего списка
+        /*  проверка на запрос одного и того же таска подряд, когда он единственный в LinkedList, так как у него нет
+         *  указателей prev и next, мы присваиваем head и tail значения null для удаления из списка
+         */
+        if (nodeLinkedListSize == 1) {
+            tail = null;
+            head = null;
+            nodeLinkedListSize--;
+            return;
+        }
+        if (head == null) { // проверка на null всего списка
             return;
         }
         if (node.data == tail.data) { // проверка что удаляемое знанчение находится в конце списка
@@ -83,8 +91,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        removeNode(nodeHashMap.get(id));
-        nodeHashMap.remove(id);
+        if(nodeHashMap.containsKey(id)){
+            removeNode(nodeHashMap.get(id));
+            nodeHashMap.remove(id);
+        }
     }
 
     @Override
