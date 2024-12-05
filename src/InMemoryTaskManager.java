@@ -92,6 +92,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
+        /* нужна проверка если передается не существующий айдищник для удаления из LinkedList,
+         * так как без проверка при одном элементе в LikedList будет удаляться не тот элемент
+         */
         if (tasks.containsKey(id)) {
             tasks.remove(id);
             inMemoryHistoryManager.remove(id);
@@ -125,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subtasks.remove(subtaskId);
                 inMemoryHistoryManager.remove(subtaskId);
             }
+            epics.get(id).getSubtasks().clear();
             inMemoryHistoryManager.remove(id);
             epics.remove(id);
             return;
