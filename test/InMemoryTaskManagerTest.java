@@ -221,7 +221,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void createSubtaskWithinASubtask() {
+    public void createSubtaskWithinASubtaskTest() {
         inMemoryTaskManager.createEpic(epic); // id1
         Subtask subtask1 = new Subtask("Subtask1", "desk");
         Subtask subtask2 = new Subtask("Subtask2", "desk");
@@ -245,20 +245,64 @@ public class InMemoryTaskManagerTest {
 
     }
 
+    // Массив айдишников сабтасков внутри эпика не удалялся(исправил)
     @Test
-    public void checkSubtasksRemoveWhenEpicWasDeleted() {
-
+    public void checkSubtasksRemoveWhenEpicWasDeletedTest() {
         ArrayList<Integer> subtasksId = new ArrayList<>();
-        subtasksId.add(4);
-        inMemoryTaskManager.createTask(task); //1
-        inMemoryTaskManager.createEpic(epic);//2
+        inMemoryTaskManager.createEpic(epic); // 1
         Subtask subtask1 = new Subtask("Subtask1", "desk");
         Subtask subtask2 = new Subtask("Subtask2", "desk");
-        inMemoryTaskManager.createSubtask(subtask1, epic.getId());//3
-        inMemoryTaskManager.createSubtask(subtask2, epic.getId());//4
-        inMemoryTaskManager.deleteSubtaskById(3);
+        Subtask subtask3 = new Subtask("Subtask2", "desk");
+        inMemoryTaskManager.createSubtask(subtask1, epic.getId()); // 2
+        inMemoryTaskManager.createSubtask(subtask2, epic.getId()); // 3
+        inMemoryTaskManager.createSubtask(subtask3, epic.getId()); // 4
+        inMemoryTaskManager.deleteEpicById(1);
         Assertions.assertEquals(subtasksId, epic.getSubtasks());
-
     }
 
+    @Test
+    public void checkSubtaskIdRelevanceWithinTheEpicTest() {
+        Subtask subtask2 = new Subtask("Subtask1", "desk");
+        Subtask subtask3 = new Subtask("Subtask2", "desk");
+        Subtask subtask4 = new Subtask("Subtask2", "desk");
+        inMemoryTaskManager.createEpic(epic); // 1
+        inMemoryTaskManager.createSubtask(subtask2, epic.getId()); // 2
+        inMemoryTaskManager.createSubtask(subtask3, epic.getId()); // 3
+        inMemoryTaskManager.createSubtask(subtask4, epic.getId()); // 3
+        inMemoryTaskManager.deleteSubtaskById(3);
+        ArrayList<Integer> subtasksId = new ArrayList<>();
+        subtasksId.add(2);
+        subtasksId.add(4);
+        Assertions.assertEquals(subtasksId, epic.getSubtasks());
+    }
+
+    /* Ничего не меняется так как получение объекта проиходит по айди в хэш мапе, котороое сеттер не изменяет.
+     * Если запрашивать таск по его конкретному измененинному айди, ничего не найдет. Как вариант можно дать
+     * возможность сеттеру изменять ключи(айдишники) hashmap на такие же, как у объекта.
+     */
+    @Test
+    public void changeTaskIdFieldWithSetterTest() {
+        Task task1 = new Task("Task1", "DESKTASK1");
+        inMemoryTaskManager.createTask(task1);// id 1
+        task1.setId(2); // id 2
+        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1), task1);
+    }
+
+    @Test
+    public void changeTaskFieldWithoutIdSetterTest() {
+        Task task1 = new Task("Task1", "DESKTASK1");
+        inMemoryTaskManager.createTask(task1);
+        task1.setName("Task2");
+        task1.setDescription("DESKTASK2");
+        task1.setStatus(Status.DONE);
+        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).getName(), "Task2");
+        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).getDescription(), "DESKTASK2");
+        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).getStatus(), Status.DONE);
+    }
+
+    // немного не понял про удаляемые подзадачи и хранение старых id
+    @Test
+    public void DeletedSubtasksShouldNotStoreOldIdTest() {
+
+    }
 }
