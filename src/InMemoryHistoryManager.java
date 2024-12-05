@@ -17,8 +17,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     //добавление в конце списка
-    private void linkLast(Task task) {
-        Node newNode = new Node(task);
+    private Node linkLast(Node newNode) {
         if (head == null) {
             head = newNode;
             tail = newNode;
@@ -29,31 +28,25 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = newNode;
         }
         nodeLinkedListSize++;
+        return newNode;
     }
 
     //удаление ноды
     private void removeNode(Node node) {
-        Node curNode = head;
-        if (head == null && tail == null) { //проверка на null всего списка
+
+        if (head == null) { //проверка на null всего списка
             return;
         }
         if (node.data == tail.data) { // проверка что удаляемое знанчение находится в конце списка
             removeLast();
             return;
         }
-        if (curNode.data == node.data) { // проверка что удаляемое значение находится в начале списка
+        if (node.data == head.data) { // проверка что удаляемое значение находится в начале списка
             removeFirst();
             return;
-        } else {
-            while (curNode.next != null) {
-                if (curNode.data == node.data) {
-                    curNode.prev.next = curNode.next;
-                    curNode.next.prev = curNode.prev;
-                    return;
-                }
-                curNode = curNode.next;
-            }
         }
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
         nodeLinkedListSize--;
     }
 
@@ -62,12 +55,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node curNode = head;
         curNode.next.prev = null;
         head = curNode.next;
+        nodeLinkedListSize--;
     }
 
     private void removeLast() {
         Node prevNode = tail.prev;
         prevNode.next = null;
         tail = prevNode;
+        nodeLinkedListSize--;
     }
 
     //История запросов без дубляжей
@@ -88,20 +83,19 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (nodeHashMap.containsKey(id)) {
-            removeNode(nodeHashMap.get(id));
-        }
+        removeNode(nodeHashMap.get(id));
+        nodeHashMap.remove(id);
     }
 
     @Override
     public void add(Task task) {
+        Node newNode = new Node(task);
         if (nodeHashMap.containsKey(task.getId())) {
-            remove(task.getId());
-            linkLast(task);
+            removeNode(nodeHashMap.get(task.getId())); // удаление из linkedList
+            nodeHashMap.put(task.getId(), linkLast(newNode)); // замена связей в hashMap для быстрого удаления из LinkedList
             return;
         }
-        nodeHashMap.put(task.getId(), new Node(task));
-        linkLast(task);
+        nodeHashMap.put(task.getId(), linkLast(newNode));
     }
 
     private class Node {
