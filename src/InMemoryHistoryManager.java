@@ -91,7 +91,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if(nodeHashMap.containsKey(id)){
+        if (nodeHashMap.containsKey(id)) {
             removeNode(nodeHashMap.get(id));
             nodeHashMap.remove(id);
         }
