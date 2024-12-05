@@ -17,7 +17,7 @@ public class InMemoryHistoryManagerTest {
 
 
     @BeforeEach
-    public void createInMemoryHistoryManager() {
+    public void createInMemoryHistoryManagerTest() {
 
         inMemoryHistoryManager = new InMemoryHistoryManager();
         task = new Task("1T", "2T");
@@ -29,7 +29,7 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void checkHistoryOrder() {
+    public void checkHistoryOrderTest() {
         //ожидаемый порядок
         List<Task> historyTask = new ArrayList<>();
         historyTask.add(subtask);
@@ -71,4 +71,5 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
 
     }
+
 }
