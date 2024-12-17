@@ -19,13 +19,15 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String result = "\n" + "       SubtaskId: " + this.getId() + "\n" +
-                "       EpicId: " + getEpicId() + "\n" +
-                "       Title: " + this.getName() + "\n" +
-                "       Description: " + this.getDescription() + "\n" +
-                "       Tasks.Subtask.Tasks.Status: " + this.getStatus() + "\n";
-
-        return result;
+//        String result = "\n" + "       SubtaskId: " + this.getId() + "\n" +
+//                "       EpicId: " + getEpicId() + "\n" +
+//                "       Title: " + this.getName() + "\n" +
+//                "       Description: " + this.getDescription() + "\n" +
+//                "       Tasks.Subtask.Tasks.Status: " + this.getStatus() + "\n";
+//
+//        return result;
+        return this.getId() + "," + Type.SUBTASK + "," + this.getName() +
+                "," + this.getStatus() + "," + this.getDescription() + "," + getEpicId();
     }
 
 }

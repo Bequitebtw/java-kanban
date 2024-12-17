@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    Task createTask(Task task);
+    Task createTask(Task task) throws ManagerSaveException;
 
-    Epic createEpic(Task epic);
+    Epic createEpic(Task epic) throws ManagerSaveException;
 
-    Subtask createSubtask(Task subtask, int epicId);
+    Subtask createSubtask(Task subtask, int epicId) throws ManagerSaveException;
 
     ArrayList<Task> getAllTypesOfTasks();
 
