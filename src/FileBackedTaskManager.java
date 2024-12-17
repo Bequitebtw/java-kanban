@@ -1,4 +1,5 @@
 import tasks.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +22,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTaskManager.createEpic(epic1);
         fileBackedTaskManager.createSubtask(subtask1, epic1.getId());
         fileBackedTaskManager.createSubtask(subtask2, epic1.getId());
-
 
     }
 
