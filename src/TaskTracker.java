@@ -2,12 +2,13 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.io.IOException;
+
 public class TaskTracker {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-
 
         Task task1 = new Task("TASK1", "DESK1TASK");
         Task task2 = new Task("TASK2", "DESK2TASK");
@@ -17,14 +18,6 @@ public class TaskTracker {
         Subtask subtask2 = new Subtask("SUBTASK2", "DESK2SUBTASK");
         Subtask subtask3 = new Subtask("SUBTASK3", "DESK3SUBTASK");
 
-        // создание
-        inMemoryTaskManager.createTask(task1); //1
-        inMemoryTaskManager.createTask(task2); //2
-        inMemoryTaskManager.createEpic(epic1); //3
-        inMemoryTaskManager.createEpic(epic2); //4
-        inMemoryTaskManager.createSubtask(subtask1, epic1.getId()); //5
-        inMemoryTaskManager.createSubtask(subtask2, epic2.getId()); //6
-        inMemoryTaskManager.createSubtask(subtask3, epic1.getId()); //7
 
         // Проверка на изменение порядка одинаковых элементов в истории
         inMemoryTaskManager.getTaskById(1);

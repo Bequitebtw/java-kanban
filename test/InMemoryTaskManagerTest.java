@@ -300,9 +300,4 @@ public class InMemoryTaskManagerTest {
         Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).getStatus(), Status.DONE);
     }
 
-    // немного не понял про удаляемые подзадачи и хранение старых id
-    @Test
-    public void DeletedSubtasksShouldNotStoreOldIdTest() {
-
-    }
 }
