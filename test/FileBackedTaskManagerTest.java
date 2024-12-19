@@ -1,49 +1,41 @@
-import com.sun.source.util.TaskListener;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FileBackedTaskManagerTest {
-    private File outputFile = new File("OutputFile.txt"); //пустой (для конструктора класса, для записи)
     private File inputFile = new File("InputFile.txt"); // заполненный тасками
     private File emptyFile = new File("emptyFile.txt"); //пустой
 
 
-    // можно было сделать геттер для файла чтобы сравнить старые данные и перезаписанные
     @Test
-    public void uploadEmptyFileTest() throws IOException {
-        try {
-            FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
-            Assertions.assertNotEquals(fileBackedTaskManager.loadFromFile(emptyFile), fileBackedTaskManager);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    public void uploadEmptyFileTest() {
+        Exception exception = assertThrows(ManagerSaveException.class, () -> {
+            FileBackedTaskManager.loadFromFile(emptyFile); // пустой файл
+        });
+
+        assertEquals(exception.getMessage(), "Пустой файл или строка");
     }
 
     @Test
-    public void noSuchFileTest() throws IOException {
-        try {
-            FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
-            Assertions.assertNull(fileBackedTaskManager.loadFromFile(new File("asdjaisfjiojdfojaso")));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    public void noSuchFileTest() {
+        File file = new File("Tasks"); //несуществующий файл
+        Exception exception = assertThrows(ManagerSaveException.class, () -> {
+            FileBackedTaskManager.loadFromFile(file);
+        });
+
+        assertEquals(exception.getMessage(), "Нет такого файла");
     }
 
     @Test
     public void saveSomeTasksTest() {
 
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
         Task task1 = new Task("TASK1", "DESK1TASK");//1
         Epic epic1 = new Epic("EPIC1", "DESK1EPIC");//2
         Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");//3
@@ -59,8 +51,8 @@ public class FileBackedTaskManagerTest {
 
 
     @Test
-    public void loadSomeTasks() throws IOException {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
+    public void loadSomeTasks() {
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
         Task task1 = new Task("TASK1", "DESK1TASK");//1
         Epic epic1 = new Epic("EPIC1", "DESK1EPIC");//2
         Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");//3
@@ -71,13 +63,8 @@ public class FileBackedTaskManagerTest {
         subtask1.setEpicId(2);
         subtask2.setId(4);
         subtask2.setEpicId(2);
-        try {
-            fileBackedTaskManager.loadFromFile(inputFile);
-            List<Task> arr = List.of(task1, epic1, subtask1, subtask2);
-            Assertions.assertEquals(arr, fileBackedTaskManager.getAllTypesOfTasks());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
+        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(inputFile);
+        List<Task> arr = List.of(task1, epic1, subtask1, subtask2);
+        Assertions.assertEquals(arr, fileBackedTaskManager1.getAllTypesOfTasks());
     }
 }

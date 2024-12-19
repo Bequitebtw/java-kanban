@@ -6,30 +6,31 @@ import java.util.Comparator;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private File file;
+    private static File file = new File("OutputFile.txt");
 
-    public FileBackedTaskManager(File file) {
-        this.file = file;
+    // нет смысла передавать в конструктор файл, в который переносятся данные,
+    // так как эта часть и так скрыта от пользователя
+
+    public FileBackedTaskManager() {
+
     }
 
     public static void main(String[] args) throws IOException {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("OutputFile.txt"));
-        Task task1 = new Task("TASK1", "DESK1TASK");//1
-        Epic epic1 = new Epic("EPIC1", "DESK1EPIC");//2
-        Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");//3
-        Subtask subtask2 = new Subtask("SUBTASK2", "DESK2SUBTASK");//4
-        fileBackedTaskManager.createTask(task1);
-        fileBackedTaskManager.createEpic(epic1);
-        fileBackedTaskManager.createSubtask(subtask1, epic1.getId());
-        fileBackedTaskManager.createSubtask(subtask2, epic1.getId());
-
+        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("emptyFile.txt"));
+        System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
     }
 
-    // При выбрасывании своего исключения приходится менять сигнатуры методов
-    public void save() /*throws ManagerSaveException */ {
+    public void save() throws ManagerSaveException {
+
+        /* При переносе данных, если статусы задач написаны неверно(конфликт DONE c IN_PROGRESS или NEW),
+           они перезапишутся в соответствии с логикой изменения статуса
+        */
+
         try (Writer fileWriter = new FileWriter(file)) {
-            /* сортирую массив по id так как если этого не делать, таски будут сохраняться также как в файле,
-               и может случиится ситуация при создании сабтаска без эпика
+            /* сортирую массив по id, так как если этого не делать, таски будут сохраняться также как в файле,
+               и может случиится ситуация при создании сабтаска без эпика (можно было отлавливать и добавлять
+               определенные таски, при этом пришлось бы 2 раза проходится по файлу, думаю что сортировка по id
+               не такая затратная, а также все такси написаны по порядку(если это некорректно,я изменю))
             */
             ArrayList<Task> arr = super.getAllTypesOfTasks();
             Comparator<Task> sorted = Comparator.comparing(Task::getId);
@@ -38,75 +39,81 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 fileWriter.write(task.toString() + "\n");
             }
         } catch (IOException e) {
-            e.getMessage();
+            throw new ManagerSaveException(";;;");
         }
     }
 
-    // немного не понял как связать эти 2 метода и почему метод loadFromFile должен возвращать FileBackedTaskManager
-    private Task fromString(String value) throws IOException {
-        String[] arr = value.split(",");
-        if (arr[1].trim().equals("SUBTASK")) {
-            Subtask subtask = new Subtask(arr[2], arr[4]);
-            subtask.setId(Integer.parseInt(arr[0]));
-            subtask.setEpicId(Integer.parseInt(arr[5]));
-            if (arr[3].trim().equals("DONE")) {
+    private static Task fromString(String value) {
+        String[] TaskObject = value.split(",");
+        String id = TaskObject[0];
+        String type = TaskObject[1];
+        String name = TaskObject[2];
+        String status = TaskObject[3];
+        String description = TaskObject[4];
+        final String DONE = "DONE";
+        final String NEW = "NEW";
+        final String IN_PROGRESS = "IN_PROGRESS";
+
+        if (type.trim().equals("SUBTASK")) {
+            String epicId = TaskObject[5];
+            Subtask subtask = new Subtask(name, description);
+            subtask.setId(Integer.parseInt(id));
+            subtask.setEpicId(Integer.parseInt(epicId));
+            if (status.trim().equals(DONE)) {
                 subtask.setStatus(Status.DONE);
-            } else if (arr[3].trim().equals("NEW")) {
+            } else if (status.trim().equals(NEW)) {
                 subtask.setStatus(Status.NEW);
-            } else if (arr[3].trim().equals("IN_PROGRESS")) {
+            } else if (status.trim().equals(IN_PROGRESS)) {
                 subtask.setStatus(Status.IN_PROGRESS);
             }
             return subtask;
         }
-        if (arr[1].trim().equals("EPIC")) {
-            Epic epic = new Epic(arr[2], arr[4]);
-            epic.setId(Integer.parseInt(arr[0]));
-            if (arr[3].trim().equals("DONE")) {
+        if (type.trim().equals("EPIC")) {
+            Epic epic = new Epic(name, description);
+            epic.setId(Integer.parseInt(id));
+            if (status.trim().equals(DONE)) {
                 epic.setStatus(Status.DONE);
-            } else if (arr[3].trim().equals("NEW")) {
+            } else if (status.trim().equals(NEW)) {
                 epic.setStatus(Status.NEW);
-            } else if (arr[3].trim().equals("IN_PROGRESS")) {
+            } else if (status.trim().equals(IN_PROGRESS)) {
                 epic.setStatus(Status.IN_PROGRESS);
             }
             return epic;
         } else {
-            Task task = new Task(arr[2], arr[4]);
-            task.setId(Integer.parseInt(arr[0]));
-            if (arr[3].trim().equals("DONE")) {
+            Task task = new Task(name, description);
+            task.setId(Integer.parseInt(id));
+            if (status.trim().equals(DONE)) {
                 task.setStatus(Status.DONE);
-            } else if (arr[3].trim().equals("NEW")) {
+            } else if (status.trim().equals(NEW)) {
                 task.setStatus(Status.NEW);
-            } else if (arr[3].trim().equals("IN_PROGRESS")) {
+            } else if (status.trim().equals(IN_PROGRESS)) {
                 task.setStatus(Status.IN_PROGRESS);
             }
             return task;
         }
     }
 
-    public FileBackedTaskManager loadFromFile(File loadFile) throws IOException, ArrayIndexOutOfBoundsException {
-
+    public static FileBackedTaskManager loadFromFile(File loadFile) {
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
         try {
             FileReader reader = new FileReader(loadFile);
             BufferedReader br = new BufferedReader(reader);
-
             while (br.ready()) {
                 Task task = (fromString(br.readLine()));
                 if (task.getClass().equals(Task.class)) {
-                    createTask(task);
+                    fileBackedTaskManager.createTask(task);
                 } else if (task.getClass().equals(Epic.class)) {
-                    createEpic((Epic) task);
+                    fileBackedTaskManager.createEpic((Epic) task);
                 } else if (task.getClass().equals(Subtask.class)) {
-                    createSubtask((Subtask) task, ((Subtask) task).getEpicId());
+                    fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
                 }
-
             }
-            return new FileBackedTaskManager(file);
+            return fileBackedTaskManager;
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Пустой файл или строка");
+            throw new ManagerSaveException("Пустой файл или строка");
         } catch (IOException e) {
-            System.out.println("Нет такого файла");
+            throw new ManagerSaveException("Нет такого файла");
         }
-        return null;
     }
 
     @Override
