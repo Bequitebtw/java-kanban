@@ -15,7 +15,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("emptyFile.txt"));
         System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
     }
@@ -44,18 +44,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static Task fromString(String value) {
-        String[] TaskObject = value.split(",");
-        String id = TaskObject[0];
-        String type = TaskObject[1];
-        String name = TaskObject[2];
-        String status = TaskObject[3];
-        String description = TaskObject[4];
+        String[] taskObject = value.split(",");
+        String id = taskObject[0];
+        String type = taskObject[1];
+        String name = taskObject[2];
+        String status = taskObject[3];
+        String description = taskObject[4];
         final String DONE = "DONE";
         final String NEW = "NEW";
         final String IN_PROGRESS = "IN_PROGRESS";
 
         if (type.trim().equals("SUBTASK")) {
-            String epicId = TaskObject[5];
+            String epicId = taskObject[5];
             Subtask subtask = new Subtask(name, description);
             subtask.setId(Integer.parseInt(id));
             subtask.setEpicId(Integer.parseInt(epicId));

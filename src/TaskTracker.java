@@ -2,11 +2,9 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.io.IOException;
-
 public class TaskTracker {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
 
