@@ -61,12 +61,14 @@ public class Task {
 
     @Override
     public String toString() {
-        String result = "\nTaskId: " + this.id + "\n" +
-                "Title: " + this.name + "\n" +
-                "Description: " + this.description + "\n" +
-                "Tasks.Task.Tasks.Status: " + this.status + "\n";
-        System.out.println();
-        return result;
+//        String result = "\nTaskId: " + this.id + "\n" +
+//                "Title: " + this.name + "\n" +
+//                "Description: " + this.description + "\n" +
+//                "Tasks.Task.Tasks.Status: " + this.status + "\n";
+//        System.out.println();
+//        return result;
+        return this.getId() + "," + Type.TASK + "," + this.getName() +
+                "," + this.getStatus() + "," + this.getDescription();
     }
 
 }
