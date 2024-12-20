@@ -6,32 +6,23 @@ import java.util.Comparator;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static File file = new File("OutputFile.txt");
+    private File file;
+    private final String DONE = "DONE";
+    private final String NEW = "NEW";
+    private final String IN_PROGRESS = "IN_PROGRESS";
 
-    // нет смысла передавать в конструктор файл, в который переносятся данные,
-    // так как эта часть и так скрыта от пользователя
-
-    public FileBackedTaskManager() {
-
+    public FileBackedTaskManager(File file) {
+        this.file = file;
     }
 
     public static void main(String[] args) {
-        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("emptyFile.txt"));
-        System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
+        // Как в таком случае определить в какой файл будут загружаться данные?
+        FileBackedTaskManager fileBackedTaskManager = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
+        System.out.println(fileBackedTaskManager.getAllTypesOfTasks());
     }
 
-    public void save() throws ManagerSaveException {
-
-        /* При переносе данных, если статусы задач написаны неверно(конфликт DONE c IN_PROGRESS или NEW),
-           они перезапишутся в соответствии с логикой изменения статуса
-        */
-
+    public void save() {
         try (Writer fileWriter = new FileWriter(file)) {
-            /* сортирую массив по id, так как если этого не делать, таски будут сохраняться также как в файле,
-               и может случиится ситуация при создании сабтаска без эпика (можно было отлавливать и добавлять
-               определенные таски, при этом пришлось бы 2 раза проходится по файлу, думаю что сортировка по id
-               не такая затратная, а также все такси написаны по порядку(если это некорректно,я изменю))
-            */
             ArrayList<Task> arr = super.getAllTypesOfTasks();
             Comparator<Task> sorted = Comparator.comparing(Task::getId);
             arr.sort(sorted);
@@ -39,20 +30,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 fileWriter.write(task.toString() + "\n");
             }
         } catch (IOException e) {
-            throw new ManagerSaveException(";;;");
+            throw new ManagerSaveException("IOException");
+        } catch (NullPointerException e) {
+            throw new ManagerSaveException("file is null");
         }
     }
 
-    private static Task fromString(String value) {
+    private Task fromString(String value) {
         String[] taskObject = value.split(",");
         String id = taskObject[0];
         String type = taskObject[1];
         String name = taskObject[2];
         String status = taskObject[3];
         String description = taskObject[4];
-        final String DONE = "DONE";
-        final String NEW = "NEW";
-        final String IN_PROGRESS = "IN_PROGRESS";
 
         if (type.trim().equals("SUBTASK")) {
             String epicId = taskObject[5];
@@ -94,12 +84,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File loadFile) {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
+        /* Единственный вопрос, как мне определить куда будут загружаться данные из loadFile. Так как метод статический,
+           я могу передать только статическую переменную в конструктор, а значит этот файл будет общим для всех объектов,
+           и запись будет происходить в один и тот же файл. Пока что все создаваемые объекты через этот метод сохраняют
+           данные в outputFile.txt
+        */
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("outputFile.txt"));
         try {
             FileReader reader = new FileReader(loadFile);
             BufferedReader br = new BufferedReader(reader);
             while (br.ready()) {
-                Task task = (fromString(br.readLine()));
+                Task task = (fileBackedTaskManager.fromString(br.readLine()));
                 if (task.getClass().equals(Task.class)) {
                     fileBackedTaskManager.createTask(task);
                 } else if (task.getClass().equals(Epic.class)) {

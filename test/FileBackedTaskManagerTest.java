@@ -12,8 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FileBackedTaskManagerTest {
     private File inputFile = new File("InputFile.txt"); // заполненный тасками
-    private File emptyFile = new File("emptyFile.txt"); //пустой
+    private File emptyFile = new File("emptyFile.txt"); // пустой
 
+    private File outputFile = new File("outputFile.txt"); // файл вывода
 
     @Test
     public void uploadEmptyFileTest() {
@@ -37,7 +38,7 @@ public class FileBackedTaskManagerTest {
     @Test
     public void saveSomeTasksTest() {
 
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
         Task task1 = new Task("TASK1", "DESK1TASK");//1
         Epic epic1 = new Epic("EPIC1", "DESK1EPIC");//2
         Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");//3
@@ -54,7 +55,7 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void loadSomeTasks() {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(outputFile);
         Task task1 = new Task("TASK1", "DESK1TASK");//1
         Epic epic1 = new Epic("EPIC1", "DESK1EPIC");//2
         Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");//3
