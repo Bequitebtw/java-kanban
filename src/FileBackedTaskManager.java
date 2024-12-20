@@ -7,18 +7,25 @@ import java.util.Comparator;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File file;
-    private final String DONE = "DONE";
-    private final String NEW = "NEW";
-    private final String IN_PROGRESS = "IN_PROGRESS";
+    private static final String DONE = "DONE";
+    private static final String NEW = "NEW";
+    private static final String IN_PROGRESS = "IN_PROGRESS";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public static void main(String[] args) {
-        // Как в таком случае определить в какой файл будут загружаться данные?
+        // Как в таком случае определить в какой файл будут выгружаться данные?
         FileBackedTaskManager fileBackedTaskManager = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
+
+        // Так данные будут сохраняться в переданный файл
+        FileBackedTaskManager fileBackedTaskManager1 = new FileBackedTaskManager(new File("testFile.txt"));
+        fileBackedTaskManager1.createTask(new Task("TASK", "TASKDESK"));
+        fileBackedTaskManager1.createEpic(new Epic("EPIC", "EPICDESK"));
+
         System.out.println(fileBackedTaskManager.getAllTypesOfTasks());
+        System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
     }
 
     public void save() {
@@ -36,6 +43,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
+    // Добавил вспомогательный метод, так как было много дублирования кода
+    private Task setStatus(Task task, String status) {
+        if (status.trim().equals(DONE)) {
+            task.setStatus(Status.DONE);
+        } else if (status.trim().equals(NEW)) {
+            task.setStatus(Status.NEW);
+        } else if (status.trim().equals(IN_PROGRESS)) {
+            task.setStatus(Status.IN_PROGRESS);
+        }
+        return task;
+    }
+
     private Task fromString(String value) {
         String[] taskObject = value.split(",");
         String id = taskObject[0];
@@ -49,37 +68,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Subtask subtask = new Subtask(name, description);
             subtask.setId(Integer.parseInt(id));
             subtask.setEpicId(Integer.parseInt(epicId));
-            if (status.trim().equals(DONE)) {
-                subtask.setStatus(Status.DONE);
-            } else if (status.trim().equals(NEW)) {
-                subtask.setStatus(Status.NEW);
-            } else if (status.trim().equals(IN_PROGRESS)) {
-                subtask.setStatus(Status.IN_PROGRESS);
-            }
-            return subtask;
+            return (Subtask) setStatus(subtask, status);
         }
         if (type.trim().equals("EPIC")) {
             Epic epic = new Epic(name, description);
             epic.setId(Integer.parseInt(id));
-            if (status.trim().equals(DONE)) {
-                epic.setStatus(Status.DONE);
-            } else if (status.trim().equals(NEW)) {
-                epic.setStatus(Status.NEW);
-            } else if (status.trim().equals(IN_PROGRESS)) {
-                epic.setStatus(Status.IN_PROGRESS);
-            }
-            return epic;
+            return (Epic) setStatus(epic, status);
         } else {
             Task task = new Task(name, description);
             task.setId(Integer.parseInt(id));
-            if (status.trim().equals(DONE)) {
-                task.setStatus(Status.DONE);
-            } else if (status.trim().equals(NEW)) {
-                task.setStatus(Status.NEW);
-            } else if (status.trim().equals(IN_PROGRESS)) {
-                task.setStatus(Status.IN_PROGRESS);
-            }
-            return task;
+            return (Task) setStatus(task, status);
         }
     }
 
