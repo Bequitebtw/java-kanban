@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FileBackedTaskManagerTest {
     private File inputFile = new File("InputFile.txt"); // заполненный тасками
-    private File emptyFile = new File("emptyFile.txt"); // пустой
+    private File emptyFile = new File("emptyFileTest.txt"); // пустой
 
-    private File outputFile = new File("outputFile.txt"); // файл вывода
+    private File outputFile = new File("outputFileTest.txt"); // файл вывода
 
     @Test
     public void uploadEmptyFileTest() {

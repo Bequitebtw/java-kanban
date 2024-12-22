@@ -1,12 +1,11 @@
 import tasks.*;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private File file;
+    private final File file;
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
     private static final String IN_PROGRESS = "IN_PROGRESS";
@@ -16,15 +15,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        // Как в таком случае определить в какой файл будут выгружаться данные?
-        FileBackedTaskManager fileBackedTaskManager = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
-
-        // Так данные будут сохраняться в переданный файл
-        FileBackedTaskManager fileBackedTaskManager1 = new FileBackedTaskManager(new File("testFile.txt"));
-        fileBackedTaskManager1.createTask(new Task("TASK", "TASKDESK"));
-        fileBackedTaskManager1.createEpic(new Epic("EPIC", "EPICDESK"));
-
-        System.out.println(fileBackedTaskManager.getAllTypesOfTasks());
+        /*
+         Как я понял это правильное решение, что за менеджером закреплен файл из которого мы брали информацию.
+         Думал что решение, это сделать так, чтобы из 1 файла можно было создать несколько менеджеров, которые записали
+         бы информацию в свои файлы и были независимы.
+         */
+        Epic epic = new Epic("EPIC1","DESKEPIC");
+        Task task = new Task("TASK1","DESKEPIC");
+        Subtask subtask1 = new Subtask("SUBTASK","DESKSUBTASK");
+        Subtask subtask2 = new Subtask("SUBTASK2","DESKSUBTASK2");
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("inputFile.txt"));
+        fileBackedTaskManager.createEpic(epic);
+        fileBackedTaskManager.createTask(task);
+        fileBackedTaskManager.createSubtask(subtask1, epic.getId());
+        fileBackedTaskManager.createSubtask(subtask2, epic.getId());
+        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
         System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
     }
 
@@ -82,12 +87,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File loadFile) {
-        /* Единственный вопрос, как мне определить куда будут загружаться данные из loadFile. Так как метод статический,
-           я могу передать только статическую переменную в конструктор, а значит этот файл будет общим для всех объектов,
-           и запись будет происходить в один и тот же файл. Пока что все создаваемые объекты через этот метод сохраняют
-           данные в outputFile.txt
-        */
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("outputFile.txt"));
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(loadFile);
         try {
             FileReader reader = new FileReader(loadFile);
             BufferedReader br = new BufferedReader(reader);
