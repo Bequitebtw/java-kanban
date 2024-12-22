@@ -1,10 +1,13 @@
 import tasks.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+
+
     private final File file;
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
@@ -20,10 +23,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
          Думал что решение, это сделать так, чтобы из 1 файла можно было создать несколько менеджеров, которые записали
          бы информацию в свои файлы и были независимы.
          */
-        Epic epic = new Epic("EPIC1","DESKEPIC");
-        Task task = new Task("TASK1","DESKEPIC");
-        Subtask subtask1 = new Subtask("SUBTASK","DESKSUBTASK");
-        Subtask subtask2 = new Subtask("SUBTASK2","DESKSUBTASK2");
+        Epic epic = new Epic("EPIC1", "DESKEPIC");
+        Task task = new Task("TASK1", "DESKEPIC");
+        Subtask subtask1 = new Subtask("SUBTASK", "DESKSUBTASK");
+        Subtask subtask2 = new Subtask("SUBTASK2", "DESKSUBTASK2");
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("inputFile.txt"));
         fileBackedTaskManager.createEpic(epic);
         fileBackedTaskManager.createTask(task);
