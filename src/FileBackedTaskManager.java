@@ -1,8 +1,12 @@
 import tasks.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -23,17 +27,44 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
          Думал что решение, это сделать так, чтобы из 1 файла можно было создать несколько менеджеров, которые записали
          бы информацию в свои файлы и были независимы.
          */
-        Epic epic = new Epic("EPIC1", "DESKEPIC");
-        Task task = new Task("TASK1", "DESKEPIC");
-        Subtask subtask1 = new Subtask("SUBTASK", "DESKSUBTASK");
+        Epic epic1 = new Epic("EPIC1", "DESKEPIC");
+        Epic epic2 = new Epic("EPIC2", "DESKEPIC2");
+        Task task1 = new Task("TASK1", "DESKTASK1");
+        Task task2 = new Task("TASK2", "DESKTASK2");
+        Task task3 = new Task("TASK3", "DESKTASK3");
+        Subtask subtask1 = new Subtask("SUBTASK1", "DESKSUBTASK");
         Subtask subtask2 = new Subtask("SUBTASK2", "DESKSUBTASK2");
+        Subtask subtask3 = new Subtask("SUBTASK3", "DESKSUBTASK3");
+
+
+        task1.setStartTime(LocalDateTime.of(2024, 10, 10, 2, 1));
+        task2.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 0));
+        task3.setStartTime(LocalDateTime.of(2024, 10, 10, 20, 0));
+        task1.setDuration(Duration.ofHours(8));
+        task2.setDuration(Duration.ofHours(9));
+        task3.setDuration(Duration.ofHours(1));
+        subtask1.setStartTime(LocalDateTime.of(2024, 3, 12, 0, 0));
+        subtask1.setDuration(Duration.ofHours(10));
+        subtask2.setStartTime(LocalDateTime.of(2024, 4, 12, 10, 30));
+        subtask2.setDuration(Duration.ofHours(5));
+        subtask3.setStartTime(LocalDateTime.of(2024, 5, 10, 10, 10));
+        subtask3.setDuration(Duration.ofHours(12));
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("inputFile.txt"));
-        fileBackedTaskManager.createEpic(epic);
-        fileBackedTaskManager.createTask(task);
-        fileBackedTaskManager.createSubtask(subtask1, epic.getId());
-        fileBackedTaskManager.createSubtask(subtask2, epic.getId());
-        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
-        System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
+        fileBackedTaskManager.createTask(task1); //1
+        fileBackedTaskManager.createTask(task2); //2
+        fileBackedTaskManager.createTask(task3); //3
+//        fileBackedTaskManager.createSubtask(subtask1, epic1.getId()); //3
+//        fileBackedTaskManager.createTask(task2); //4
+//        fileBackedTaskManager.createTask(task3); //5
+//        fileBackedTaskManager.printAllTypesOfTasks();
+//        fileBackedTaskManager.deleteEpicById(1);
+//        System.out.println();
+//        System.out.println();
+        fileBackedTaskManager.printAllTypesOfTasks();
+        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+//        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
+//        fileBackedTaskManager1.printAllTypesOfTasks();
+//        System.out.println(fileBackedTaskManager1.getPrioritizedTasks());
     }
 
     public void save() {
@@ -47,7 +78,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("IOException");
         } catch (NullPointerException e) {
-            throw new ManagerSaveException("file is null");
+            throw new ManagerSaveException("null fields, fill the fields");
         }
     }
 
@@ -64,27 +95,43 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private Task fromString(String value) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
         String[] taskObject = value.split(",");
         String id = taskObject[0];
         String type = taskObject[1];
         String name = taskObject[2];
         String status = taskObject[3];
         String description = taskObject[4];
-
+        String startTime = taskObject[5];
+        String duration = taskObject[6];
+        String endTime = taskObject[7];
         if (type.trim().equals("SUBTASK")) {
-            String epicId = taskObject[5];
+            String epicId = taskObject[8];
             Subtask subtask = new Subtask(name, description);
             subtask.setId(Integer.parseInt(id));
             subtask.setEpicId(Integer.parseInt(epicId));
+            subtask.setStartTime(LocalDateTime.parse(startTime, formatter));
+            subtask.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
             return (Subtask) setStatus(subtask, status);
         }
         if (type.trim().equals("EPIC")) {
             Epic epic = new Epic(name, description);
             epic.setId(Integer.parseInt(id));
+            if (!Objects.equals(startTime, "Время начала не определено")) {
+                epic.setStartTime(LocalDateTime.parse(startTime, formatter));
+            }
+            if (!Objects.equals(duration, "Продолжительность не определена")) {
+                epic.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
+            }
+            if (!Objects.equals(endTime, "Время окончания не определено")) {
+                epic.setEndTime(LocalDateTime.parse(startTime, formatter));
+            }
             return (Epic) setStatus(epic, status);
         } else {
             Task task = new Task(name, description);
             task.setId(Integer.parseInt(id));
+            task.setStartTime(LocalDateTime.parse(startTime, formatter));
+            task.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
             return (Task) setStatus(task, status);
         }
     }

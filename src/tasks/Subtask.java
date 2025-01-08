@@ -1,5 +1,8 @@
 package tasks;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -19,15 +22,9 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-//        String result = "\n" + "       SubtaskId: " + this.getId() + "\n" +
-//                "       EpicId: " + getEpicId() + "\n" +
-//                "       Title: " + this.getName() + "\n" +
-//                "       Description: " + this.getDescription() + "\n" +
-//                "       Tasks.Subtask.Tasks.Status: " + this.getStatus() + "\n";
-//
-//        return result;
         return this.getId() + "," + Type.SUBTASK + "," + this.getName() +
-                "," + this.getStatus() + "," + this.getDescription() + "," + getEpicId();
+                "," + this.getStatus() + "," + this.getDescription() + "," + this.startTime.format(DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")) +
+                "," + this.duration.toMinutes() + "," + this.getEndTime().format(DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")) + "," + getEpicId();
     }
 
 }
