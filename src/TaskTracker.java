@@ -16,7 +16,6 @@ public class TaskTracker {
         Subtask subtask2 = new Subtask("SUBTASK2", "DESK2SUBTASK");
         Subtask subtask3 = new Subtask("SUBTASK3", "DESK3SUBTASK");
 
-
         // Проверка на изменение порядка одинаковых элементов в истории
         inMemoryTaskManager.getTaskById(1);
         inMemoryTaskManager.getTaskById(1);

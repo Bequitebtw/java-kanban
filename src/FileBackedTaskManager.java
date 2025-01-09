@@ -11,7 +11,6 @@ import java.util.Objects;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-
     private final File file;
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
@@ -22,49 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        /*
-         Как я понял это правильное решение, что за менеджером закреплен файл из которого мы брали информацию.
-         Думал что решение, это сделать так, чтобы из 1 файла можно было создать несколько менеджеров, которые записали
-         бы информацию в свои файлы и были независимы.
-         */
-        Epic epic1 = new Epic("EPIC1", "DESKEPIC");
-        Epic epic2 = new Epic("EPIC2", "DESKEPIC2");
-        Task task1 = new Task("TASK1", "DESKTASK1");
-        Task task2 = new Task("TASK2", "DESKTASK2");
-        Task task3 = new Task("TASK3", "DESKTASK3");
-        Subtask subtask1 = new Subtask("SUBTASK1", "DESKSUBTASK");
-        Subtask subtask2 = new Subtask("SUBTASK2", "DESKSUBTASK2");
-        Subtask subtask3 = new Subtask("SUBTASK3", "DESKSUBTASK3");
 
-
-        task1.setStartTime(LocalDateTime.of(2024, 10, 10, 2, 1));
-        task2.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 0));
-        task3.setStartTime(LocalDateTime.of(2024, 10, 10, 20, 0));
-        task1.setDuration(Duration.ofHours(8));
-        task2.setDuration(Duration.ofHours(9));
-        task3.setDuration(Duration.ofHours(1));
-        subtask1.setStartTime(LocalDateTime.of(2024, 3, 12, 0, 0));
-        subtask1.setDuration(Duration.ofHours(10));
-        subtask2.setStartTime(LocalDateTime.of(2024, 4, 12, 10, 30));
-        subtask2.setDuration(Duration.ofHours(5));
-        subtask3.setStartTime(LocalDateTime.of(2024, 5, 10, 10, 10));
-        subtask3.setDuration(Duration.ofHours(12));
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("inputFile.txt"));
-        fileBackedTaskManager.createTask(task1); //1
-        fileBackedTaskManager.createTask(task2); //2
-        fileBackedTaskManager.createTask(task3); //3
-//        fileBackedTaskManager.createSubtask(subtask1, epic1.getId()); //3
-//        fileBackedTaskManager.createTask(task2); //4
-//        fileBackedTaskManager.createTask(task3); //5
-//        fileBackedTaskManager.printAllTypesOfTasks();
-//        fileBackedTaskManager.deleteEpicById(1);
-//        System.out.println();
-//        System.out.println();
-        fileBackedTaskManager.printAllTypesOfTasks();
-        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
-//        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
-//        fileBackedTaskManager1.printAllTypesOfTasks();
-//        System.out.println(fileBackedTaskManager1.getPrioritizedTasks());
     }
 
     public void save() {

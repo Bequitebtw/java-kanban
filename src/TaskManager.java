@@ -4,21 +4,22 @@ import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskManager {
-    Task createTask(Task task);
+    Task createTask(Task task); // //
 
-    Epic createEpic(Task epic);
+    Epic createEpic(Task epic); // //
 
-    Subtask createSubtask(Task subtask, int epicId);
+    Subtask createSubtask(Task subtask, int epicId); // //
 
     ArrayList<Task> getAllTypesOfTasks();
 
-    void deleteTaskById(int id);
+    void deleteTaskById(int id); // //
 
-    void deleteSubtaskById(int id);
+    void deleteSubtaskById(int id); // //
 
-    void deleteEpicById(int id);
+    void deleteEpicById(int id); // //
 
     void clearAllTasks();
 
@@ -28,11 +29,11 @@ public interface TaskManager {
 
     void clearSubtasks();
 
-    Task getTaskById(int id);
+    Optional<Task> getTaskById(int id);
 
     Task getEpicById(int id);
 
-    Task getSubtaskById(int id);
+    Optional<Subtask> getSubtaskById(int id);
 
     void updateTask(Task updateTask);
 
