@@ -1,39 +1,40 @@
 import tasks.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-
 
     private final File file;
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
     private static final String IN_PROGRESS = "IN_PROGRESS";
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public static void main(String[] args) {
-        /*
-         Как я понял это правильное решение, что за менеджером закреплен файл из которого мы брали информацию.
-         Думал что решение, это сделать так, чтобы из 1 файла можно было создать несколько менеджеров, которые записали
-         бы информацию в свои файлы и были независимы.
-         */
-        Epic epic = new Epic("EPIC1", "DESKEPIC");
-        Task task = new Task("TASK1", "DESKEPIC");
-        Subtask subtask1 = new Subtask("SUBTASK", "DESKSUBTASK");
-        Subtask subtask2 = new Subtask("SUBTASK2", "DESKSUBTASK2");
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("inputFile.txt"));
-        fileBackedTaskManager.createEpic(epic);
+
+        Task task = new Task("NAME","DESK");
+        Task task1 = new Task("NAME","DESK");
+        task.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        task.setDuration(Duration.ofHours(10));
+        task1.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        task1.setDuration(Duration.ofHours(10));
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("src/files/inputFile.txt"));
         fileBackedTaskManager.createTask(task);
-        fileBackedTaskManager.createSubtask(subtask1, epic.getId());
-        fileBackedTaskManager.createSubtask(subtask2, epic.getId());
-        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("inputFile.txt"));
-        System.out.println(fileBackedTaskManager1.getAllTypesOfTasks());
+        fileBackedTaskManager.createTask(task1);
+        fileBackedTaskManager.printAllTypesOfTasks();
+        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+
     }
 
     public void save() {
@@ -47,7 +48,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("IOException");
         } catch (NullPointerException e) {
-            throw new ManagerSaveException("file is null");
+            throw new ManagerSaveException("null fields, fill the fields");
         }
     }
 
@@ -70,21 +71,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = taskObject[2];
         String status = taskObject[3];
         String description = taskObject[4];
-
+        String startTime = taskObject[5];
+        String duration = taskObject[6];
+        String endTime = taskObject[7];
         if (type.trim().equals("SUBTASK")) {
-            String epicId = taskObject[5];
+            String epicId = taskObject[8];
             Subtask subtask = new Subtask(name, description);
             subtask.setId(Integer.parseInt(id));
             subtask.setEpicId(Integer.parseInt(epicId));
+            subtask.setStartTime(LocalDateTime.parse(startTime, formatter));
+            subtask.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
             return (Subtask) setStatus(subtask, status);
         }
         if (type.trim().equals("EPIC")) {
             Epic epic = new Epic(name, description);
             epic.setId(Integer.parseInt(id));
+            if (!Objects.equals(startTime, "Время начала не определено")) {
+                epic.setStartTime(LocalDateTime.parse(startTime, formatter));
+            }
+            if (!Objects.equals(duration, "Продолжительность не определена")) {
+                epic.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
+            }
+            if (!Objects.equals(endTime, "Время окончания не определено")) {
+                epic.setEndTime(LocalDateTime.parse(startTime, formatter));
+            }
             return (Epic) setStatus(epic, status);
         } else {
             Task task = new Task(name, description);
             task.setId(Integer.parseInt(id));
+            task.setStartTime(LocalDateTime.parse(startTime, formatter));
+            task.setDuration(Duration.ofMinutes(Long.parseLong(duration)));
             return (Task) setStatus(task, status);
         }
     }

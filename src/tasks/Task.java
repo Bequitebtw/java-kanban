@@ -1,5 +1,8 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,6 +10,8 @@ public class Task {
     protected String description;
     protected int id;
     protected Status status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
@@ -46,6 +51,29 @@ public class Task {
         return status;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (duration.equals(null) || startTime.equals(null)) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,7 +96,9 @@ public class Task {
 //        System.out.println();
 //        return result;
         return this.getId() + "," + Type.TASK + "," + this.getName() +
-                "," + this.getStatus() + "," + this.getDescription();
+                "," + this.getStatus() + "," + this.getDescription() +
+                "," + this.startTime.format(DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")) +
+                "," + this.duration.toMinutes() + "," + this.getEndTime().format(DateTimeFormatter.ofPattern("dd.MM.yy HH:mm"));
     }
 
 }

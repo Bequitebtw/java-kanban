@@ -11,6 +11,7 @@ import java.util.List;
 public class InMemoryHistoryManagerTest {
 
     InMemoryHistoryManager inMemoryHistoryManager;
+    InMemoryTaskManager inMemoryTaskManager;
     Task task;
     Epic epic;
     Subtask subtask;
@@ -18,8 +19,8 @@ public class InMemoryHistoryManagerTest {
 
     @BeforeEach
     public void createInMemoryHistoryManagerTest() {
-
         inMemoryHistoryManager = new InMemoryHistoryManager();
+        inMemoryTaskManager = new InMemoryTaskManager();
         task = new Task("1T", "2T");
         task.setId(1);
         epic = new Epic("1E", "2E");
@@ -71,5 +72,54 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
 
     }
+    @Test
+    public void duplicateTest() {
+        List<Task> historyTask = new ArrayList<>();
+        historyTask.add(task);
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.add(task);
 
+        Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
+    }
+
+    @Test
+    public void removeFromStartTest() {
+        List<Task> historyTask = new ArrayList<>();
+        historyTask.add(epic); // id 2
+        historyTask.add(subtask); // id 3
+
+        inMemoryHistoryManager.add(task); // id 1
+        inMemoryHistoryManager.add(epic);
+        inMemoryHistoryManager.add(subtask);
+        inMemoryHistoryManager.remove(1);
+        Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
+    }
+
+    @Test
+    public void removeFromCenterTest() {
+        List<Task> historyTask = new ArrayList<>();
+        historyTask.add(task); // 1
+        historyTask.add(subtask); // 3
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.add(epic); // 2
+        inMemoryHistoryManager.add(subtask);
+        inMemoryHistoryManager.remove(2);
+
+        Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
+    }
+
+    @Test
+    public void removeFromEndTest() {
+        List<Task> historyTask = new ArrayList<>();
+        historyTask.add(task); // 1
+        historyTask.add(epic); // 2
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.add(epic);
+        inMemoryHistoryManager.add(subtask); // 3
+        inMemoryHistoryManager.remove(3);
+
+        Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
+    }
 }
