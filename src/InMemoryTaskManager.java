@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, Subtask> subtasks;
 
-    private TreeSet<Task> taskTreeSet;
+    private TreeSet<Task> tasksStartTime;
     private int idCounter = 1;
     private InMemoryHistoryManager inMemoryHistoryManager;
 
@@ -21,7 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
-        taskTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        tasksStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     @Override
@@ -31,8 +31,8 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(idCounter, task);
             if (task.getStartTime() != null) {
                 // проверка не пересекаются ли таски
-                if (intersectionCheck(task)) {
-                    taskTreeSet.add(task);
+                if (notIntersectCheck(task)) {
+                    tasksStartTime.add(task);
                 }
             }
             idCounter++;
@@ -64,10 +64,10 @@ public class InMemoryTaskManager implements TaskManager {
             subtask.setId(idCounter);
             subtasks.put(idCounter, subtask1);
             epics.get(epicId).getSubtasks().add(idCounter);
-            checkEpicStartAndEndTime(epics.get(epicId));
+            changeEpicStartAndEndTime(epics.get(epicId));
             if (subtask1.getStartTime() != null) {
-                if (intersectionCheck(subtask)) {
-                    taskTreeSet.add(subtask);
+                if (notIntersectCheck(subtask)) {
+                    tasksStartTime.add(subtask);
                 }
             }
             checkSubtasksStatus(epicId);
@@ -80,7 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public List<Task> getPrioritizedTasks() {
-        return taskTreeSet.stream().filter(this::intersectionCheck).toList();
+        return tasksStartTime.stream().filter(this::notIntersectCheck).toList();
     }
 
     public ArrayList<Task> getAllTypesOfTasks() {
@@ -116,7 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
          * так как без проверки при одном элементе в LikedList будет удаляться не тот элемент
          */
         if (tasks.containsKey(id)) {
-            taskTreeSet.remove(tasks.get(id));
+            tasksStartTime.remove(tasks.get(id));
             tasks.remove(id);
             inMemoryHistoryManager.remove(id);
             return;
@@ -134,11 +134,11 @@ public class InMemoryTaskManager implements TaskManager {
                     epicSubtasks.remove(x);
                 }
             }
-            taskTreeSet.remove(subtasks.get(id));
+            tasksStartTime.remove(subtasks.get(id));
             subtasks.remove(id);
             inMemoryHistoryManager.remove(id);
             checkSubtasksStatus(epicId);
-            checkEpicStartAndEndTime(epics.get(epicId));
+            changeEpicStartAndEndTime(epics.get(epicId));
             return;
         }
         System.out.println("Нет такого сабтаска" + id);
@@ -230,7 +230,7 @@ public class InMemoryTaskManager implements TaskManager {
             Task task = tasks.get(updateTask.getId());
             setNewFields(task, updateTask.getName(), updateTask.getDescription(), updateTask.getStatus(),
                     updateTask.getStartTime(), updateTask.getDuration());
-            if (!intersectionCheck(task)) {
+            if (!notIntersectCheck(task)) {
                 deleteTaskById(task.getId());
             }
         } else {
@@ -250,7 +250,7 @@ public class InMemoryTaskManager implements TaskManager {
             setNewFields(epic, updateEpic.getName(), updateEpic.getDescription(), updateEpic.getStatus(),
                     updateEpic.getStartTime(), updateEpic.getDuration());
             checkEpicStatus(updateEpic.getId());
-            checkEpicStartAndEndTime(epic);
+            changeEpicStartAndEndTime(epic);
         } else {
             System.out.println("Нет такого эпика");
         }
@@ -266,7 +266,7 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subtask = subtasks.get(updateSubtask.getId());
             setNewFields(subtask, updateSubtask.getName(), updateSubtask.getDescription(), updateSubtask.getStatus(),
                     updateSubtask.getStartTime(), updateSubtask.getDuration());
-            if (!intersectionCheck(subtask)) {
+            if (!notIntersectCheck(subtask)) {
                 deleteSubtaskById(subtask.getId());
             }
             checkSubtasksStatus(subtask.getEpicId());
@@ -315,7 +315,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void checkEpicStartAndEndTime(Epic epic) {
+    private void changeEpicStartAndEndTime(Epic epic) {
         if (getEpicSubtasksById(epic.getId()).isEmpty()) {
             epic.setEndTime(null);
             epic.setStartTime(null);
@@ -341,20 +341,12 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDuration(duration);
     }
 
-    private boolean intersectionCheck2(Task task1, Task task2) {
-        if (task1.getStartTime().isBefore(task2.getStartTime()) && task1.getEndTime().isAfter(task2.getStartTime())
-                || task1.getStartTime().isAfter(task2.getStartTime()) && task1.getEndTime().isBefore(task2.getStartTime())) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean intersectionCheck(Task task) {
+    private boolean notIntersectCheck(Task task) {
         boolean isNotIntersection = true;
-        if (taskTreeSet.isEmpty()) {
+        if (tasksStartTime.isEmpty()) {
             return true;
         }
-        for (Task treeTask : taskTreeSet) {
+        for (Task treeTask : tasksStartTime) {
             if (treeTask.getStartTime().isBefore(task.getStartTime()) && treeTask.getEndTime().isAfter(task.getStartTime())
                     || treeTask.getStartTime().isAfter(task.getStartTime()) && treeTask.getEndTime().isBefore(task.getStartTime())) {
                 isNotIntersection = false;

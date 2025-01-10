@@ -7,19 +7,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskManager {
-    Task createTask(Task task); // //
+    Task createTask(Task task);
 
-    Epic createEpic(Task epic); // //
+    Epic createEpic(Task epic);
 
-    Subtask createSubtask(Task subtask, int epicId); // //
+    Subtask createSubtask(Task subtask, int epicId);
 
     ArrayList<Task> getAllTypesOfTasks();
 
-    void deleteTaskById(int id); // //
+    void deleteTaskById(int id);
 
-    void deleteSubtaskById(int id); // //
+    void deleteSubtaskById(int id);
 
-    void deleteEpicById(int id); // //
+    void deleteEpicById(int id);
 
     void clearAllTasks();
 

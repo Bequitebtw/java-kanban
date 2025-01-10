@@ -15,12 +15,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
     private static final String IN_PROGRESS = "IN_PROGRESS";
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public static void main(String[] args) {
+
+        Task task = new Task("NAME","DESK");
+        Task task1 = new Task("NAME","DESK");
+        task.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        task.setDuration(Duration.ofHours(10));
+        task1.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        task1.setDuration(Duration.ofHours(10));
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("src/files/inputFile.txt"));
+        fileBackedTaskManager.createTask(task);
+        fileBackedTaskManager.createTask(task1);
+        fileBackedTaskManager.printAllTypesOfTasks();
+        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
 
     }
 
@@ -52,7 +65,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private Task fromString(String value) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
         String[] taskObject = value.split(",");
         String id = taskObject[0];
         String type = taskObject[1];
