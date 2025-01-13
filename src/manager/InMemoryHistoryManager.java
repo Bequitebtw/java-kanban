@@ -1,4 +1,6 @@
-import tasks.Task;
+package manager;
+
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +12,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
     private HashMap<Integer, Node> nodeHashMap = new HashMap<>();
 
-    InMemoryHistoryManager() {
+    public InMemoryHistoryManager() {
         head = null;
         tail = null;
         nodeLinkedListSize = 0;

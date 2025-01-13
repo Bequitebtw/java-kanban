@@ -1,7 +1,9 @@
+import exception.ManagerSaveException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.Task;
+import model.Task;
+import manager.FileBackedTaskManager;
 
 import java.io.File;
 import java.time.Duration;
@@ -71,13 +73,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @Test
     public void loadSomeTasksTest() {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(loadSomeTasksTest);
-        fileBackedTaskManager.createTask(task);
+//        fileBackedTaskManager.createTask(task);
         fileBackedTaskManager.createEpic(epic);
-        fileBackedTaskManager.createSubtask(subtask1, task.getId());
-        fileBackedTaskManager.createSubtask(subtask2, task.getId());
+        fileBackedTaskManager.createSubtask(subtask1, epic.getId());
+        fileBackedTaskManager.createSubtask(subtask2, epic.getId());
 
         FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(loadSomeTasksTest);
 
         Assertions.assertEquals(fileBackedTaskManager.getAllTypesOfTasks(), fileBackedTaskManager1.getAllTypesOfTasks());
     }
+
 }

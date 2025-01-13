@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.Epic;
-import tasks.Status;
-import tasks.Subtask;
-import tasks.Task;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
+import manager.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,7 +16,7 @@ import java.util.List;
 abstract class TaskManagerTest<T extends TaskManager> {
 
     protected abstract T getTaskManager();
-
+    T taskManager;
     protected Task task = new Task("TASK1", "DESK1TASK");
     protected Task task2 = new Task("TASK2", "DESK2TASK");
     protected Epic epic = new Epic("EPIC1", "DESK1EPIC");
@@ -23,206 +25,191 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected Subtask subtask2 = new Subtask("SUBTASK2", "DESK2SUBTASK");
     protected Subtask subtask3 = new Subtask("SUBTASK2", "DESK2SUBTASK");
 
+    @BeforeEach
+    public void setTaskManager(){
+        taskManager = getTaskManager();
+    }
 
     @Test
     public void createTaskTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task);
+        taskManager.createTask(task);
 
-        Assertions.assertEquals(task, taskManger.getTaskById(1).get());
+        Assertions.assertEquals(task, taskManager.getTaskById(1).get());
     }
 
     @Test
     public void createEpicTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
+        taskManager.createEpic(epic);
 
-        Assertions.assertEquals(epic, taskManger.getEpicById(1));
+        Assertions.assertEquals(epic, taskManager.getEpicById(1));
     }
 
     @Test
     public void createSubtaskTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, 1);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, 1);
 
-        Assertions.assertEquals(subtask1, taskManger.getSubtaskById(2).get());
+        Assertions.assertEquals(subtask1, taskManager.getSubtaskById(2).get());
     }
 
     @Test
     public void getTaskByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task);
+        taskManager.createTask(task);
 
-        Assertions.assertEquals(task, taskManger.getTaskById(1).get());
+        Assertions.assertEquals(task, taskManager.getTaskById(1).get());
     }
 
     @Test
     public void getEpicByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
+        taskManager.createEpic(epic);
 
-        Assertions.assertEquals(epic, taskManger.getEpicById(1));
+        Assertions.assertEquals(epic, taskManager.getEpicById(1));
     }
 
     @Test
     public void getSubtaskByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, 1);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, 1);
 
-        Assertions.assertEquals(subtask1, taskManger.getSubtaskById(2).get());
+        Assertions.assertEquals(subtask1, taskManager.getSubtaskById(2).get());
     }
 
     @Test
     public void updateTaskTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task);
+        taskManager.createTask(task);
         Task task1 = new Task("U1", "U2");
         task1.setStartTime(LocalDateTime.of(2000, 1, 1, 1, 1));
         task1.setDuration(Duration.ofHours(10));
         task1.setId(task.getId());
         task1.setStatus(Status.DONE);
-        taskManger.updateTask(task1);
+        taskManager.updateTask(task1);
 
-        Assertions.assertEquals(task1, taskManger.getTaskById(1).get());
+        Assertions.assertEquals(task1, taskManager.getTaskById(1).get());
     }
 
     @Test
     public void updateEpicTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
+        taskManager.createEpic(epic);
         Epic epic1 = new Epic("U1", "U2");
         epic1.setId(epic.getId());
         epic1.setStatus(Status.DONE);
-        taskManger.updateEpic(epic1);
+        taskManager.updateEpic(epic1);
 
-        Assertions.assertEquals(epic1, taskManger.getEpicById(1));
+        Assertions.assertEquals(epic1, taskManager.getEpicById(1));
     }
 
     @Test
     public void updateSubtaskTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, 1);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, 1);
         subtask1.setStartTime(LocalDateTime.of(2000, 1, 1, 1, 1));
         subtask1.setDuration(Duration.ofHours(10));
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask1.setName("NEWSUBTASK");
-        taskManger.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask1);
 
-        Assertions.assertEquals(subtask1, taskManger.getSubtaskById(2).get());
+        Assertions.assertEquals(subtask1, taskManager.getSubtaskById(2).get());
     }
 
     @Test
     public void deleteTaskByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task);
-        taskManger.deleteTaskById(1);
+        taskManager.createTask(task);
+        taskManager.deleteTaskById(1);
 
-        Assertions.assertNull(taskManger.getTaskById(1));
+        Assertions.assertTrue(taskManager.getTaskById(1).isEmpty());
     }
 
     @Test
     public void deleteEpicByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.deleteEpicById(1);
+        taskManager.createEpic(epic);
+        taskManager.deleteEpicById(1);
 
-        Assertions.assertNull(taskManger.getEpicById(1));
+        Assertions.assertNull(taskManager.getEpicById(1));
     }
 
     @Test
     public void deleteSubtaskByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, 1);
-        taskManger.deleteSubtaskById(2);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, 1);
+        taskManager.deleteSubtaskById(2);
 
-        Assertions.assertNull(taskManger.getSubtaskById(2));
+        Assertions.assertTrue(taskManager.getSubtaskById(2).isEmpty());
     }
 
     @Test
     public void clearALlTasksTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task);
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, 2);
-        taskManger.clearAllTasks();
+        taskManager.createTask(task);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, 2);
+        taskManager.clearAllTasks();
 
-        Assertions.assertEquals(0, taskManger.getAllTypesOfTasks().size());
+        Assertions.assertEquals(0, taskManager.getAllTypesOfTasks().size());
     }
 
     @Test
     public void getHistoryTest() {
-        T taskManger = getTaskManager();
         List<Task> historyList = new ArrayList<>();
-        taskManger.createTask(task);
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, epic.getId());
+        taskManager.createTask(task);
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, epic.getId());
 
         historyList.add(task);
         historyList.add(epic);
         historyList.add(subtask1);
 
-        taskManger.getTaskById(1);
-        taskManger.getEpicById(2);
-        taskManger.getSubtaskById(3);
-        Assertions.assertEquals(historyList, taskManger.getHistory());
+        taskManager.getTaskById(1);
+        taskManager.getEpicById(2);
+        taskManager.getSubtaskById(3);
+        Assertions.assertEquals(historyList, taskManager.getHistory());
     }
 
     @Test
     public void clearTasksTest() {
-        T taskManger = getTaskManager();
-        taskManger.createTask(task); // 1
-        taskManger.createTask(task2); // 2
-        taskManger.clearTasks();
+        taskManager.createTask(task); // 1
+        taskManager.createTask(task2); // 2
+        taskManager.clearTasks();
 
-        Assertions.assertNull(taskManger.getTaskById(1));
-        Assertions.assertNull(taskManger.getTaskById(2));
+        Assertions.assertTrue(taskManager.getTaskById(1).isEmpty());
+        Assertions.assertTrue(taskManager.getTaskById(2).isEmpty());
     }
 
     @Test
     public void clearEpicsTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic); // 1
-        taskManger.createEpic(epic2); // 2
-        taskManger.clearEpics();
+        taskManager.createEpic(epic); // 1
+        taskManager.createEpic(epic2); // 2
+        taskManager.clearEpics();
 
-        Assertions.assertNull(taskManger.getEpicById(1));
-        Assertions.assertNull(taskManger.getEpicById(2));
+        Assertions.assertNull(taskManager.getEpicById(1));
+        Assertions.assertNull(taskManager.getEpicById(2));
     }
 
     @Test
     public void clearSubtasksTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic);
-        taskManger.createSubtask(subtask1, epic.getId()); // 2
-        taskManger.createSubtask(subtask2, epic.getId()); // 3
-        taskManger.createSubtask(subtask3, epic.getId()); // 4
-        taskManger.clearSubtasks();
+        taskManager.createEpic(epic);
+        taskManager.createSubtask(subtask1, epic.getId()); // 2
+        taskManager.createSubtask(subtask2, epic.getId()); // 3
+        taskManager.createSubtask(subtask3, epic.getId()); // 4
+        taskManager.clearSubtasks();
 
-        Assertions.assertNull(taskManger.getSubtaskById(2));
-        Assertions.assertNull(taskManger.getSubtaskById(3));
-        Assertions.assertNull(taskManger.getSubtaskById(4));
+        Assertions.assertTrue(taskManager.getSubtaskById(2).isEmpty());
+        Assertions.assertTrue(taskManager.getSubtaskById(3).isEmpty());
+        Assertions.assertTrue(taskManager.getSubtaskById(4).isEmpty());
     }
 
     @Test
     public void getEpicSubtasksByIdTest() {
-        T taskManger = getTaskManager();
-        taskManger.createEpic(epic); //1
-        taskManger.createSubtask(subtask1, epic.getId());//2
-        taskManger.createSubtask(subtask2, epic.getId());//3
+        taskManager.createEpic(epic); //1
+        taskManager.createSubtask(subtask1, epic.getId());//2
+        taskManager.createSubtask(subtask2, epic.getId());//3
         ArrayList<Subtask> subtasks = new ArrayList<>();
         subtasks.add(subtask1);
         subtasks.add(subtask2);
-        Assertions.assertEquals(subtasks, taskManger.getEpicSubtasksById(1));
+        Assertions.assertEquals(subtasks, taskManager.getEpicSubtasksById(1));
 
     }
 
     @Test
     public void getAllTypesOFTasksTest() {
-        T taskManger = getTaskManager();
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(task);
         tasks.add(task2);
@@ -231,12 +218,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
         tasks.add(subtask1);
         tasks.add(subtask3);
 
-        taskManger.createTask(task);
-        taskManger.createTask(task2);
-        taskManger.createEpic(epic);
-        taskManger.createEpic(epic2);
-        taskManger.createSubtask(subtask1, epic.getId());
-        taskManger.createSubtask(subtask3, epic.getId());
-        Assertions.assertEquals(tasks, taskManger.getAllTypesOfTasks());
+        taskManager.createTask(task);
+        taskManager.createTask(task2);
+        taskManager.createEpic(epic);
+        taskManager.createEpic(epic2);
+        taskManager.createSubtask(subtask1, epic.getId());
+        taskManager.createSubtask(subtask3, epic.getId());
+        Assertions.assertEquals(tasks, taskManager.getAllTypesOfTasks());
     }
 }

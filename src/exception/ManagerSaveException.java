@@ -1,3 +1,5 @@
+package exception;
+
 public class ManagerSaveException extends RuntimeException {
     private final String message;
 

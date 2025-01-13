@@ -1,11 +1,11 @@
-package tasks;
+package model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtasks;
+    private final ArrayList<Integer> subtasks;
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {

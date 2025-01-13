@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import manager.InMemoryHistoryManager;
+import manager.InMemoryTaskManager;
 
 import java.util.ArrayList;
 import java.util.List;

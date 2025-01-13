@@ -1,33 +1,35 @@
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import manager.InMemoryTaskManager;
+
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class TaskTracker {
+    private static final Task task = new Task("TASK","DEKSTASK",
+            LocalDateTime.of(2024,11,11,11,11), Duration.ofHours(20));
+    private static final Epic epic = new Epic("EPIC","DESKEPIC");
+    private static final Subtask subtask = new Subtask("SUBTASK","DESKSUB",
+            LocalDateTime.of(2024,10,10,10,10),Duration.ofHours(10));
 
     public static void main(String[] args) {
 
+
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-
-        Task task1 = new Task("TASK1", "DESK1TASK");
-        Task task2 = new Task("TASK2", "DESK2TASK");
-        Epic epic1 = new Epic("EPIC1", "DESK1EPIC");
-        Epic epic2 = new Epic("EPIC2", "DESK2EPIC");
-        Subtask subtask1 = new Subtask("SUBTASK1", "DESK1SUBTASK");
-        Subtask subtask2 = new Subtask("SUBTASK2", "DESK2SUBTASK");
-        Subtask subtask3 = new Subtask("SUBTASK3", "DESK3SUBTASK");
-
-        // Проверка на изменение порядка одинаковых элементов в истории
-        inMemoryTaskManager.getTaskById(1);
-        inMemoryTaskManager.getTaskById(1);
-        inMemoryTaskManager.deleteTaskById(1);
-        System.out.println(inMemoryTaskManager.getHistory());
-        inMemoryTaskManager.getEpicById(3);
-        inMemoryTaskManager.getEpicById(3);
-        inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.getSubtaskById(7);
-        inMemoryTaskManager.getSubtaskById(6);
-
-        System.out.println(inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createTask(task);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        epic.setId(10);
+        inMemoryTaskManager.printAllTypesOfTasks();
 
     }
 

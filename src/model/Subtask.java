@@ -1,6 +1,9 @@
-package tasks;
+package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Subtask extends Task {
     private int epicId;
@@ -9,7 +12,10 @@ public class Subtask extends Task {
         super(name, description);
         status = Status.NEW;
     }
-
+    public Subtask(String name, String description,LocalDateTime startTime, Duration duration) {
+        super(name, description, startTime, duration);
+        status = Status.NEW;
+    }
     public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
@@ -17,7 +23,6 @@ public class Subtask extends Task {
     public int getEpicId() {
         return epicId;
     }
-
 
     @Override
     public String toString() {

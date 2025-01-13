@@ -1,5 +1,8 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import manager.InMemoryHistoryManager;
+import manager.InMemoryTaskManager;
+import manager.Managers;
 
 public class ManagersTest {
     InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();

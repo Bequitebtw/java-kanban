@@ -1,11 +1,13 @@
-import tasks.*;
+package manager;
+
+import exception.ManagerSaveException;
+import model.*;
 
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Objects;
 
 
@@ -23,27 +25,48 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
 
-        Task task = new Task("NAME","DESK");
-        Task task1 = new Task("NAME","DESK");
-        task.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        Task task = new Task("TASK", "DESK");
+        Task task1 = new Task("TASK1", "DESK");
+        Epic epic = new Epic("EPIC", "DESK");
+        Epic epic1 = new Epic("EPIC1", "DESK");
+        Subtask subtask = new Subtask("SUBTASK", "DESK");
+        Subtask subtask1 = new Subtask("SUBTASK1", "DESK");
+        task.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 10));
         task.setDuration(Duration.ofHours(10));
-        task1.setStartTime(LocalDateTime.of(2024,10,10,10,10));
+        task1.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 10));
         task1.setDuration(Duration.ofHours(10));
+        subtask.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 10));
+        subtask.setDuration(Duration.ofHours(10));
+        subtask1.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 10));
+        subtask1.setDuration(Duration.ofHours(10));
+
+
+        //Можно добавить 1 и тот же сабтаск в 1 эпик несколько раз, но нельзя в несколько разных эпиков
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(new File("src/files/inputFile.txt"));
-        fileBackedTaskManager.createTask(task);
-        fileBackedTaskManager.createTask(task1);
+
+        //выдаст исключение
+        fileBackedTaskManager.createEpic(epic); // 1
+        fileBackedTaskManager.createEpic(epic1); // 2
+        fileBackedTaskManager.createSubtask(subtask, epic.getId()); // 3 -> 1
+        fileBackedTaskManager.createSubtask(subtask1, epic1.getId()); // 4 -> 2
+        fileBackedTaskManager.createSubtask(subtask1, epic1.getId());
+        epic1.setId(10);
         fileBackedTaskManager.printAllTypesOfTasks();
-        System.out.println(fileBackedTaskManager.getPrioritizedTasks());
+        FileBackedTaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(new File("src/files/inputFile.txt"));
+        fileBackedTaskManager1.printAllTypesOfTasks();
 
     }
 
     public void save() {
         try (Writer fileWriter = new FileWriter(file)) {
             ArrayList<Task> arr = super.getAllTypesOfTasks();
-            Comparator<Task> sorted = Comparator.comparing(Task::getId);
-            arr.sort(sorted);
+//            Comparator<Task> sorted = Comparator.comparing(Task::getId);
+//            arr.sort(sorted);
+            int counter = 0;
             for (Task task : arr) {
-                fileWriter.write(task.toString() + "\n");
+                if (counter == arr.size() - 1) fileWriter.write(task.toString());
+                else fileWriter.write(task.toString() + "\n");
+                counter++;
             }
         } catch (IOException e) {
             throw new ManagerSaveException("IOException");

@@ -1,20 +1,21 @@
-import tasks.Epic;
-import tasks.Status;
-import tasks.Subtask;
-import tasks.Task;
+package manager;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, Subtask> subtasks;
+    private final HashMap<Integer, Task> tasks;
+    private final HashMap<Integer, Epic> epics;
+    private final HashMap<Integer, Subtask> subtasks;
 
-    private TreeSet<Task> tasksStartTime;
+    private final TreeSet<Task> tasksStartTime;
     private int idCounter = 1;
-    private InMemoryHistoryManager inMemoryHistoryManager;
+    private final InMemoryHistoryManager inMemoryHistoryManager;
 
     public InMemoryTaskManager() {
         inMemoryHistoryManager = new InMemoryHistoryManager();
@@ -26,8 +27,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(Task task) {
-        task.setId(idCounter);
-        if (task.getClass().equals(Task.class)) {
+        if (task.getClass().equals(Task.class) && !tasks.containsValue(task)) {
+            task.setId(idCounter);
             tasks.put(idCounter, task);
             if (task.getStartTime() != null) {
                 // проверка не пересекаются ли таски
@@ -37,7 +38,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
             idCounter++;
         } else {
-            System.out.println("не тот объект");
+            System.out.println("не тот объект или он уже был добавлен");
             return null;
         }
         return task;
@@ -45,12 +46,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic createEpic(Task epic) {
-        epic.setId(idCounter);
-        if (epic.getClass().equals(Epic.class)) {
+        if (epic.getClass().equals(Epic.class) && !epics.containsValue(epic)) {
+            epic.setId(idCounter);
             epics.put(idCounter, (Epic) epic);
             idCounter++;
         } else {
-            System.out.println("не тот объект");
+            System.out.println("не тот объект или он уже был добавлен");
             return null;
         }
         return (Epic) epic;
@@ -190,10 +191,11 @@ public class InMemoryTaskManager implements TaskManager {
             return Optional.of(tasks.get(id));
         } else {
             System.out.println("Нет такого таска");
-            return null;
+            return Optional.empty();
         }
     }
 
+    //Почему Optional ставится только для Task и Subtask
     @Override
     public Task getEpicById(int id) {
         if (epics.containsKey(id)) {
@@ -212,7 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
             return Optional.of(subtasks.get(id));
         } else {
             System.out.println("Нет такого сабтаска");
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -242,7 +244,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic updateEpic) {
         if (epics.get(updateEpic.getId()) == null) {
-            System.out.println("Нет айди у эпика");
+            System.out.println("Нет айди у эпика или нет такого id для обновления");
             return;
         }
         if (epics.containsKey(updateEpic.getId())) {
@@ -373,4 +375,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
     }
+
+
 }

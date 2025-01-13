@@ -1,4 +1,6 @@
-package tasks;
+package model;
+
+import exception.ManagerSaveException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,6 +18,14 @@ public class Task {
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+        status = Status.NEW;
+    }
+
+    public Task(String name, String description,LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.startTime = startTime;
         status = Status.NEW;
     }
 
@@ -59,11 +69,13 @@ public class Task {
         this.startTime = startTime;
     }
 
+    // Сделал выброс исключения если не установлены поля времени
     public LocalDateTime getEndTime() {
-        if (duration.equals(null) || startTime.equals(null)) {
-            return null;
+        try {
+            return startTime.plus(duration);
+        } catch (NullPointerException e){
+            throw new ManagerSaveException("Не установлена дата начала задачи и время на выполнение");
         }
-        return startTime.plus(duration);
     }
 
     public Duration getDuration() {
@@ -89,12 +101,6 @@ public class Task {
 
     @Override
     public String toString() {
-//        String result = "\nTaskId: " + this.id + "\n" +
-//                "Title: " + this.name + "\n" +
-//                "Description: " + this.description + "\n" +
-//                "Tasks.Task.Tasks.Status: " + this.status + "\n";
-//        System.out.println();
-//        return result;
         return this.getId() + "," + Type.TASK + "," + this.getName() +
                 "," + this.getStatus() + "," + this.getDescription() +
                 "," + this.startTime.format(DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")) +
