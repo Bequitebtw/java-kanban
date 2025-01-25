@@ -197,13 +197,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Почему Optional ставится только для Task и Subtask
     @Override
-    public Task getEpicById(int id) {
+    public Optional<Epic> getEpicById(int id) {
         if (epics.containsKey(id)) {
             inMemoryHistoryManager.add(epics.get(id));
-            return epics.get(id);
+            return Optional.of(epics.get(id));
         } else {
             System.out.println("Нет такого эпика");
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -376,5 +376,14 @@ public class InMemoryTaskManager implements TaskManager {
         return inMemoryHistoryManager.getHistory();
     }
 
-
+    // Добавил методы для получения отдельного вида тасков
+    public List<Task>getTasks (){
+        return tasks.values().stream().toList();
+    }
+    public List<Epic>getEpics (){
+        return epics.values().stream().toList();
+    }
+    public List<Subtask>getSubtasks (){
+        return subtasks.values().stream().toList();
+    }
 }

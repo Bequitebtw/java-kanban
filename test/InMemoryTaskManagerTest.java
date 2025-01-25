@@ -65,7 +65,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createEpic(epic);
         Assertions.assertEquals(1, inMemoryTaskManager.getTaskById(1).get().getId());
-        Assertions.assertEquals(2, inMemoryTaskManager.getEpicById(2).getId());
+        Assertions.assertEquals(2, inMemoryTaskManager.getEpicById(2).get().getId());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         inMemoryTaskManager.createEpic(epic);
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createSubtask(subtask1, epic.getId());
-        Assertions.assertEquals(1, inMemoryTaskManager.getEpicById(1).getId());
+        Assertions.assertEquals(1, inMemoryTaskManager.getEpicById(1).get().getId());
         Assertions.assertEquals(2, inMemoryTaskManager.getTaskById(2).get().getId());
         Assertions.assertEquals(3, inMemoryTaskManager.getSubtaskById(3).get().getId());
     }

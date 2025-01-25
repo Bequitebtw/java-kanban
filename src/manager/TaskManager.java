@@ -33,7 +33,7 @@ public interface TaskManager {
 
     Optional<Task> getTaskById(int id);
 
-    Task getEpicById(int id);
+    Optional<Epic> getEpicById(int id);
 
     Optional<Subtask> getSubtaskById(int id);
 
