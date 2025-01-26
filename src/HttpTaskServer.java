@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 
 public class HttpTaskServer {
-    private final int PORT = 8080;
+    private static final int PORT = 8080;
 
     private final Gson epicGson = new GsonBuilder()
             .setPrettyPrinting()
