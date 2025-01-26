@@ -19,7 +19,7 @@ Gson в хэндлере истории, а отправить с клиента
 public class BaseHttpHandler {
     protected static Gson gson;
     protected static Gson epicGson;
-    protected final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected static TaskManager taskManager;
 
     public static void setFields(TaskManager taskManager, Gson gson, Gson epicGson) {
