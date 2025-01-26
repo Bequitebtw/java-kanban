@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-
+// это если вообще не указан путь, видел так делают в некоторых api
 public class NotFoundHandler extends BaseHttpHandler implements HttpHandler {
     private String[] ways = {"Возможные пути", "/tasks", "/epics", "/subtasks", "/history", "/prioritized"};
 

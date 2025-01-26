@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-//class TasksListTypeToken extends TypeToken<List<Task>> {}
+/*Еще вопрос насчет передачи объекта в json формате. Почему я могу передать только duration и startTime
+и этот объект создастся с полями name-null description-null status-null, как сделать их обязательными? Ведь нельзя
+создать объект без полей назания и описания по логике задания. Получется конструкторы никак не влияют на десериализацию
+объекта через Gson */
 
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     @Override
@@ -28,10 +31,10 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetTasks(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 2) {
-            sendCode200(exchange, gson.toJson(inMemoryTaskManager.getTasks()));
+            sendCode200(exchange, gson.toJson(taskManager.getTasks()));
         } else if (pathParts.length == 3) {
             try {
-                Optional<Task> task = inMemoryTaskManager.getTaskById(Integer.parseInt(pathParts[2]));
+                Optional<Task> task = taskManager.getTaskById(Integer.parseInt(pathParts[2]));
                 if (task.isEmpty()) {
                     sendCode404(exchange, gson.toJson("такой задачи нет"));
                 } else {
@@ -49,17 +52,16 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         String task = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         try {
             Task newTask = gson.fromJson(task, Task.class);
-            Optional<Task> optionalTask = inMemoryTaskManager.getTaskById(newTask.getId());
+            Optional<Task> optionalTask = taskManager.getTaskById(newTask.getId());
             if (optionalTask.isEmpty()) {
-                inMemoryTaskManager.createTask(newTask);
+                taskManager.createTask(newTask);
                 sendCode201(exchange, gson.toJson("новый таск добавлен"));
             }
             if (optionalTask.isPresent()) {
-                inMemoryTaskManager.updateTask(newTask);
+                taskManager.updateTask(newTask);
                 sendCode201(exchange, gson.toJson("таск обновлен"));
             }
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
             sendCode404(exchange, gson.toJson("неправильно передан таск"));
         }
     }
@@ -67,11 +69,11 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteTasks(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 3) {
             try {
-                Optional<Task> task = inMemoryTaskManager.getTaskById(Integer.parseInt(pathParts[2]));
+                Optional<Task> task = taskManager.getTaskById(Integer.parseInt(pathParts[2]));
                 if (task.isEmpty()) {
                     sendCode404(exchange, gson.toJson("такой задачи нет"));
                 } else {
-                    inMemoryTaskManager.deleteTaskById(task.get().getId());
+                    taskManager.deleteTaskById(task.get().getId());
                     sendCode200(exchange, "Таск успешно удален");
                 }
             } catch (NumberFormatException e) {

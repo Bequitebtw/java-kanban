@@ -74,6 +74,7 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(historyTask, inMemoryHistoryManager.getHistory());
 
     }
+
     @Test
     public void duplicateTest() {
         List<Task> historyTask = new ArrayList<>();

@@ -16,6 +16,7 @@ import java.util.List;
 abstract class TaskManagerTest<T extends TaskManager> {
 
     protected abstract T getTaskManager();
+
     T taskManager;
     protected Task task = new Task("TASK1", "DESK1TASK");
     protected Task task2 = new Task("TASK2", "DESK2TASK");
@@ -26,7 +27,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected Subtask subtask3 = new Subtask("SUBTASK2", "DESK2SUBTASK");
 
     @BeforeEach
-    public void setTaskManager(){
+    public void setTaskManager() {
         taskManager = getTaskManager();
     }
 

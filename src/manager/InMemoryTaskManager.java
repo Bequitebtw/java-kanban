@@ -79,7 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return (Subtask) subtask;
     }
-
+    @Override
     public List<Task> getPrioritizedTasks() {
         return tasksStartTime.stream().filter(this::notIntersectCheck).toList();
     }
@@ -377,12 +377,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // Добавил методы для получения отдельного вида тасков
+    @Override
     public List<Task>getTasks (){
         return tasks.values().stream().toList();
     }
+    @Override
     public List<Epic>getEpics (){
         return epics.values().stream().toList();
     }
+    @Override
     public List<Subtask>getSubtasks (){
         return subtasks.values().stream().toList();
     }

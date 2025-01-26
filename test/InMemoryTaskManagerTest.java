@@ -240,7 +240,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     }
 
     @Test
-    public void intersectionAndPrioritizedTest(){
+    public void intersectionAndPrioritizedTest() {
         task.setStartTime(LocalDateTime.of(2024, 10, 10, 10, 0));
         task.setDuration(Duration.ofHours(2));
         task2.setStartTime(LocalDateTime.of(2024, 10, 10, 11, 0));
@@ -253,14 +253,14 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         inMemoryTaskManager.createTask(task);
         inMemoryTaskManager.createTask(task2);
         inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createSubtask(subtask1,epic.getId());
-        inMemoryTaskManager.createSubtask(subtask2,epic.getId());
-        List<Task>notIntersectionTasks = new ArrayList<>();
+        inMemoryTaskManager.createSubtask(subtask1, epic.getId());
+        inMemoryTaskManager.createSubtask(subtask2, epic.getId());
+        List<Task> notIntersectionTasks = new ArrayList<>();
         notIntersectionTasks.add(subtask1);
         notIntersectionTasks.add(task);
         notIntersectionTasks.add(subtask2);
 
-        Assertions.assertEquals(notIntersectionTasks,inMemoryTaskManager.getPrioritizedTasks());
+        Assertions.assertEquals(notIntersectionTasks, inMemoryTaskManager.getPrioritizedTasks());
 
     }
 }

@@ -26,10 +26,10 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetSubtasks(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 2) {
-            sendCode200(exchange, gson.toJson(inMemoryTaskManager.getSubtasks()));
+            sendCode200(exchange, gson.toJson(taskManager.getSubtasks()));
         } else if (pathParts.length == 3) {
             try {
-                Optional<Subtask> subtask = inMemoryTaskManager.getSubtaskById(Integer.parseInt(pathParts[2]));
+                Optional<Subtask> subtask = taskManager.getSubtaskById(Integer.parseInt(pathParts[2]));
                 if (subtask.isEmpty()) {
                     sendCode404(exchange, gson.toJson("такой подзадачи нет"));
                 } else {
@@ -46,14 +46,14 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         String subtask = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         try {
             Subtask newSubtask = gson.fromJson(subtask, Subtask.class);
-            Optional<Subtask> optionalSubtask = inMemoryTaskManager.getSubtaskById(newSubtask.getId());
+            Optional<Subtask> optionalSubtask = taskManager.getSubtaskById(newSubtask.getId());
             if (optionalSubtask.isPresent()) {
-                inMemoryTaskManager.updateSubtask(newSubtask);
+                taskManager.updateSubtask(newSubtask);
                 sendCode201(exchange, gson.toJson("сабтаск обновлен"));
                 return;
             }
-            if (optionalSubtask.isEmpty() && inMemoryTaskManager.getEpicById(newSubtask.getEpicId()).isPresent()) {
-                inMemoryTaskManager.createSubtask(newSubtask, newSubtask.getEpicId());
+            if (optionalSubtask.isEmpty() && taskManager.getEpicById(newSubtask.getEpicId()).isPresent()) {
+                taskManager.createSubtask(newSubtask, newSubtask.getEpicId());
                 sendCode201(exchange, gson.toJson("новый сабтаск добавлен"));
             } else {
                 sendCode404(exchange, gson.toJson("нет такого эпика или он не был передан"));
@@ -66,11 +66,11 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteSubtasks(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 3) {
             try {
-                Optional<Subtask> subtask = inMemoryTaskManager.getSubtaskById(Integer.parseInt(pathParts[2]));
+                Optional<Subtask> subtask = taskManager.getSubtaskById(Integer.parseInt(pathParts[2]));
                 if (subtask.isEmpty()) {
                     sendCode404(exchange, gson.toJson("такой подзадачи нет"));
                 } else {
-                    inMemoryTaskManager.deleteSubtaskById(subtask.get().getId());
+                    taskManager.deleteSubtaskById(subtask.get().getId());
                     sendCode200(exchange, "сабтаск успешно удален");
                 }
             } catch (NumberFormatException e) {
