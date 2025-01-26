@@ -47,8 +47,11 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    List<Task>getTasks();
-    List<Epic>getEpics();
-    List<Subtask>getSubtasks();
-    List<Task>getPrioritizedTasks();
+    List<Task> getTasks();
+
+    List<Epic> getEpics();
+
+    List<Subtask> getSubtasks();
+
+    List<Task> getPrioritizedTasks();
 }
