@@ -29,8 +29,9 @@ public class HttpTaskServer {
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
     private final HttpServer httpServer;
+
     public HttpTaskServer(TaskManager taskManager) throws IOException {
-        BaseHttpHandler.setFields(taskManager,gson,epicGson);
+        BaseHttpHandler.setFields(taskManager, gson, epicGson);
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/subtasks", new SubtasksHandler());

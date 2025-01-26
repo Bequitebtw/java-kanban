@@ -10,10 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File file;
+
     private static final String DONE = "DONE";
     private static final String NEW = "NEW";
     private static final String IN_PROGRESS = "IN_PROGRESS";
