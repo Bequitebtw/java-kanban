@@ -91,20 +91,16 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     //Раньше метод equals сравнивал все поля, теперь только айди, так написано в тз
     @Test
     public void equalityTasksByIdTest() {
-        Task task1 = new Task("Task1", "desk");
-        Task task2 = new Task("Task2", "desk");
         task2.setId(1);
-        inMemoryTaskManager.createTask(task1);
-        Assertions.assertEquals(task1, task2);
+        inMemoryTaskManager.createTask(task);
+        Assertions.assertEquals(task, task2);
     }
 
     @Test
     public void equalityEpicsByIdTest() {
-        Epic epic1 = new Epic("Epic1", "desk");
-        Epic epic2 = new Epic("Epic2", "desk");
         epic2.setId(1);
-        inMemoryTaskManager.createEpic(epic1);
-        Assertions.assertEquals(epic1, epic2);
+        inMemoryTaskManager.createEpic(epic);
+        Assertions.assertEquals(epic, epic2);
     }
 
     @Test
@@ -176,19 +172,17 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
      */
     @Test
     public void changeTaskIdFieldWithSetterTest() {
-        Task task1 = new Task("Task1", "DESKTASK1");
-        inMemoryTaskManager.createTask(task1);// id 1
-        task1.setId(2); // id 2
-        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).get(), task1);
+        inMemoryTaskManager.createTask(task);// id 1
+        task.setId(2); // id 2
+        Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).get(), task);
     }
 
     @Test
     public void changeTaskFieldWithoutIdSetterTest() {
-        Task task1 = new Task("Task1", "DESKTASK1");
-        inMemoryTaskManager.createTask(task1);
-        task1.setName("Task2");
-        task1.setDescription("DESKTASK2");
-        task1.setStatus(Status.DONE);
+        inMemoryTaskManager.createTask(task);
+        task.setName("Task2");
+        task.setDescription("DESKTASK2");
+        task.setStatus(Status.DONE);
         Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).get().getName(), "Task2");
         Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).get().getDescription(), "DESKTASK2");
         Assertions.assertEquals(inMemoryTaskManager.getTaskById(1).get().getStatus(), Status.DONE);

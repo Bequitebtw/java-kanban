@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-/* У меня изначально логика была в том, что таски можно добавлять даже с пересекающимися датами и временем в hash мапы,
- но они не будут добавляться в дерево приоритетов. Вы приняли мою логику, она так и осталась.
- Если нужно переделать напишите.
- */
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -28,7 +24,7 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetHistory(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 2) {
-            sendCode200(exchange, epicGson.toJson(taskManager.getPrioritizedTasks()));
+            sendCode200(exchange, gson.toJson(taskManager.getPrioritizedTasks()));
         } else {
             sendCode404(exchange, gson.toJson("такого пути не существует"));
         }

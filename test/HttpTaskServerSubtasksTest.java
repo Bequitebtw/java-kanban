@@ -1,5 +1,5 @@
+import TypeTokens.SubtaskListTypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
@@ -20,9 +20,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SubtaskListTypeToken extends TypeToken<List<Subtask>> {
-    //класс для получения списка сабтасков из json
-}
 
 public class HttpTaskServerSubtasksTest {
     private final TaskManager manager = Managers.getDefault();
@@ -32,9 +29,9 @@ public class HttpTaskServerSubtasksTest {
     private Subtask subtask1 = new Subtask("SUBTASK1", "DESKSUB",
             LocalDateTime.of(2024, 10, 10, 10, 10), Duration.ofHours(10));
     private Subtask subtask2 = new Subtask("SUBTASK2", "DESKSUB",
-            LocalDateTime.of(2024, 10, 10, 10, 10), Duration.ofHours(10));
+            LocalDateTime.of(2024, 9, 10, 10, 10), Duration.ofHours(10));
     private Subtask subtask3 = new Subtask("SUBTASK3", "DESKSUB",
-            LocalDateTime.of(2024, 10, 10, 10, 10), Duration.ofHours(10));
+            LocalDateTime.of(2024, 8, 10, 10, 10), Duration.ofHours(10));
 
     public HttpTaskServerSubtasksTest() throws IOException {
     }
@@ -91,8 +88,10 @@ public class HttpTaskServerSubtasksTest {
     public void updateSubtaskTest() throws IOException, InterruptedException {
         manager.createSubtask(subtask1, 1);
         //меняем статус
-        subtask1.setStatus(Status.DONE);
-        String SubtaskJson = gson.toJson(subtask1);
+        Subtask subtask = new Subtask("SUBTASK", "DESKSUBTASK", LocalDateTime.of(2024, 11, 10, 10, 10), Duration.ofHours(10));
+        subtask.setStatus(Status.DONE);
+        subtask.setId(subtask1.getId());
+        String SubtaskJson = gson.toJson(subtask);
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(SubtaskJson)).build();
@@ -105,7 +104,9 @@ public class HttpTaskServerSubtasksTest {
         //проверяем что размер не поменялся
         assertEquals(1, SubtasksFromManager.size(), "Некорректное количество задач");
         //проверяем изменился ли статус у задачи
-        assertEquals(Status.DONE, SubtasksFromManager.getFirst().getStatus(), "Некорректное имя задачи");
+        assertEquals(Status.DONE, SubtasksFromManager.getFirst().getStatus(), "Некорректный статус задачи");
+        assertEquals(LocalDateTime.of(2024, 11, 10, 10, 10)
+                , SubtasksFromManager.getFirst().getStartTime(), "Некорректное время задачи");
     }
 
     @Test

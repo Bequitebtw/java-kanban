@@ -30,8 +30,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         task.setDuration(Duration.ofMinutes(10));
         task2.setStartTime(LocalDateTime.of(2024, 10, 10, 2, 0));
         task2.setDuration(Duration.ofMinutes(10));
-        epic.setStartTime(LocalDateTime.of(2024, 10, 10, 3, 0));
-        epic.setDuration(Duration.ofMinutes(10));
         subtask1.setStartTime(LocalDateTime.of(2024, 10, 10, 4, 0));
         subtask1.setDuration(Duration.ofMinutes(10));
         subtask2.setStartTime(LocalDateTime.of(2024, 10, 10, 5, 0));

@@ -37,11 +37,11 @@ public interface TaskManager {
 
     Optional<Subtask> getSubtaskById(int id);
 
-    void updateTask(Task updateTask);
+    Task updateTask(Task updateTask);
 
-    void updateEpic(Epic updateEpic);
+    Epic updateEpic(Epic updateEpic);
 
-    void updateSubtask(Subtask updateSubtask);
+    Subtask updateSubtask(Subtask updateSubtask);
 
     ArrayList<Subtask> getEpicSubtasksById(int id);
 

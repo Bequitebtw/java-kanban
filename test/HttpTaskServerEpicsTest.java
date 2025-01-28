@@ -1,5 +1,6 @@
+import TypeTokens.EpicListTypeToken;
+import TypeTokens.SubtaskListTypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
@@ -20,14 +21,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EpicListTypeToken extends TypeToken<List<Epic>> {
-    //класс для получения списка эпиков из json
-}
 
 public class HttpTaskServerEpicsTest {
     private final TaskManager manager = Managers.getDefault();
     private final HttpTaskServer taskServer = new HttpTaskServer(manager);
-    private final Gson epicGson = taskServer.getEpicGson();
     private final Gson gson = taskServer.getGson();
     private Epic epic1 = new Epic("EPIC1", "DESKEPIC1");
     private Epic epic2 = new Epic("EPIC2", "DESKEPIC2");
@@ -58,7 +55,7 @@ public class HttpTaskServerEpicsTest {
 
     @Test
     public void addEpicTest() throws IOException, InterruptedException {
-        String taskJson = epicGson.toJson(epic1);
+        String taskJson = gson.toJson(epic1);
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/epics");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
@@ -99,7 +96,7 @@ public class HttpTaskServerEpicsTest {
         manager.createEpic(epic1);
         //меняем статус
         epic1.setStatus(Status.DONE);
-        String taskJson = epicGson.toJson(epic1);
+        String taskJson = gson.toJson(epic1);
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/epics");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
@@ -129,7 +126,7 @@ public class HttpTaskServerEpicsTest {
         //отправляем запрос
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         //конвертируем таски в массив
-        List<Epic> expectedEpics = epicGson.fromJson(response.body(), new EpicListTypeToken().getType());
+        List<Epic> expectedEpics = gson.fromJson(response.body(), new EpicListTypeToken().getType());
 
         assertEquals(200, response.statusCode());
         assertEquals(expectedEpics, manager.getEpics());
@@ -144,7 +141,7 @@ public class HttpTaskServerEpicsTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        Epic requestEpic = epicGson.fromJson(response.body(), Epic.class);
+        Epic requestEpic = gson.fromJson(response.body(), Epic.class);
         assertEquals(200, response.statusCode());
 
         assertEquals(requestEpic, manager.getEpicById(1).get());

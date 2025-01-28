@@ -29,17 +29,20 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         if (task.getClass().equals(Task.class) && !tasks.containsValue(task)) {
-            task.setId(idCounter);
-            tasks.put(idCounter, task);
-            if (task.getStartTime() != null) {
+            if (task.getStartTime() != null && task.getDuration() != null) {
                 // проверка не пересекаются ли таски
                 if (notIntersectCheck(task)) {
+                    task.setId(idCounter);
+                    tasks.put(idCounter, task);
                     tasksStartTime.add(task);
+                    idCounter++;
+                } else {
+                    System.out.println("Объект пересекается с другим по времени выполнения");
+                    return null;
                 }
             }
-            idCounter++;
         } else {
-            System.out.println("не тот объект или он уже был добавлен");
+            System.out.println("объект уже был добавлен");
             return null;
         }
         return task;
@@ -62,18 +65,20 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask createSubtask(Task subtask, int epicId) {
         if (subtask.getClass().equals(Subtask.class) && epics.containsKey(epicId)) {
             Subtask subtask1 = (Subtask) subtask;
-            subtask1.setEpicId(epicId);
-            subtask.setId(idCounter);
-            subtasks.put(idCounter, subtask1);
-            epics.get(epicId).getSubtasks().add(idCounter);
-            changeEpicStartAndEndTime(epics.get(epicId));
-            if (subtask1.getStartTime() != null) {
+            if (subtask1.getStartTime() != null && subtask1.getDuration() != null) {
                 if (notIntersectCheck(subtask)) {
+                    subtask1.setEpicId(epicId);
+                    subtask.setId(idCounter);
+                    subtasks.put(idCounter, subtask1);
+                    epics.get(epicId).getSubtasks().add(idCounter);
+                    changeEpicStartAndEndTime(epics.get(epicId));
                     tasksStartTime.add(subtask);
+                    checkSubtasksStatus(epicId);
+                    idCounter++;
+                } else {
+                    return null;
                 }
             }
-            checkSubtasksStatus(epicId);
-            idCounter++;
         } else {
             System.out.println("не тот объект или нет такого epicId");
             return null;
@@ -83,7 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return tasksStartTime.stream().filter(this::notIntersectCheck).toList();
+        return tasksStartTime.stream().toList();
     }
 
     public ArrayList<Task> getAllTypesOfTasks() {
@@ -220,63 +225,79 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
-    /* Единственный варинт как я понял это создавать новый объект(c новыми значениями)
-        и присаивать ему айдишник объекта, который хочешь обновить
-    */
     @Override
-    public void updateTask(Task updateTask) {
+    public Task updateTask(Task updateTask) {
         if (tasks.get(updateTask.getId()) == null) {
             System.out.println("Нет айди у таска");
-            return;
-        }
-        if (tasks.containsKey(updateTask.getId())) {
-            Task task = tasks.get(updateTask.getId());
-            setNewFields(task, updateTask.getName(), updateTask.getDescription(), updateTask.getStatus(),
+        } else if (tasks.containsKey(updateTask.getId())) {
+            //Сохраняем таск который пытаются изменить
+            Task oldTask = tasks.get(updateTask.getId());
+            Task testTask = new Task("ТЕСТ", "ТАСК");
+            setNewFields(testTask, updateTask.getName(), updateTask.getDescription(), updateTask.getStatus(),
                     updateTask.getStartTime(), updateTask.getDuration());
-            if (!notIntersectCheck(task)) {
-                deleteTaskById(task.getId());
+            //Удаляем таск который пытаются изменить чтобы впоследствии он не сравнивался сам с собой
+            if (!notIntersectCheck(testTask)) {
+                //Возвращаем старый таск, так как новые параметры не прошли проверку
+                System.out.println("Обновленный таск пересекается с другими");
+                return null;
+            } else {
+                setNewFields(oldTask, updateTask.getName(), updateTask.getDescription(), updateTask.getStatus(),
+                        updateTask.getStartTime(), updateTask.getDuration());
+                return updateTask;
             }
         } else {
             System.out.println("Нет такого таска");
         }
-
+        return updateTask;
     }
 
     @Override
-    public void updateEpic(Epic updateEpic) {
+    public Epic updateEpic(Epic updateEpic) {
         if (epics.get(updateEpic.getId()) == null) {
             System.out.println("Нет айди у эпика или нет такого id для обновления");
-            return;
-        }
-        if (epics.containsKey(updateEpic.getId())) {
-            Epic epic = epics.get(updateEpic.getId());
-            setNewFields(epic, updateEpic.getName(), updateEpic.getDescription(), updateEpic.getStatus(),
+        } else if (epics.containsKey(updateEpic.getId())) {
+            Epic oldEpic = epics.get(updateEpic.getId());
+            Epic testEpic = new Epic(updateEpic.getName(), updateEpic.getDescription());
+            setNewFields(testEpic, updateEpic.getName(), updateEpic.getDescription(), updateEpic.getStatus(),
                     updateEpic.getStartTime(), updateEpic.getDuration());
-            checkEpicStatus(updateEpic.getId());
-            changeEpicStartAndEndTime(epic);
+            if (!notIntersectCheck(testEpic)) {
+                System.out.println("Обновленный эпик пересекается с другими");
+                return null;
+            } else {
+                setNewFields(oldEpic, updateEpic.getName(), updateEpic.getDescription(), updateEpic.getStatus(),
+                        updateEpic.getStartTime(), updateEpic.getDuration());
+                checkEpicStatus(updateEpic.getId());
+                changeEpicStartAndEndTime(oldEpic);
+                return updateEpic;
+            }
         } else {
             System.out.println("Нет такого эпика");
         }
+        return updateEpic;
     }
 
     @Override
-    public void updateSubtask(Subtask updateSubtask) {
+    public Subtask updateSubtask(Subtask updateSubtask) {
         if (subtasks.get(updateSubtask.getId()) == null) {
             System.out.println("Нет айди у сабтаска");
-            return;
-        }
-        if (subtasks.containsKey(updateSubtask.getId())) {
-            Subtask subtask = subtasks.get(updateSubtask.getId());
-            setNewFields(subtask, updateSubtask.getName(), updateSubtask.getDescription(), updateSubtask.getStatus(),
+        } else if (subtasks.containsKey(updateSubtask.getId())) {
+            Subtask oldSubtask = subtasks.get(updateSubtask.getId());
+            Task testSubtask = new Subtask(updateSubtask.getName(), updateSubtask.getDescription());
+            setNewFields(testSubtask, updateSubtask.getName(), updateSubtask.getDescription(), updateSubtask.getStatus(),
                     updateSubtask.getStartTime(), updateSubtask.getDuration());
-            if (!notIntersectCheck(subtask)) {
-                deleteSubtaskById(subtask.getId());
+            if (!notIntersectCheck(testSubtask)) {
+                System.out.println("Обновленный таск пересекается с другими");
+                return null;
+            } else {
+                setNewFields(oldSubtask, updateSubtask.getName(), updateSubtask.getDescription(), updateSubtask.getStatus(),
+                        updateSubtask.getStartTime(), updateSubtask.getDuration());
+                checkSubtasksStatus(oldSubtask.getEpicId());
+                return updateSubtask;
             }
-            checkSubtasksStatus(subtask.getEpicId());
         } else {
             System.out.println("Нет такого сабтаска");
         }
+        return updateSubtask;
     }
 
     // думаю с этим методом код выглядит менее загруженно
@@ -321,9 +342,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void changeEpicStartAndEndTime(Epic epic) {
         if (getEpicSubtasksById(epic.getId()).isEmpty()) {
-            epic.setEndTime(null);
-            epic.setStartTime(null);
-            epic.setDuration(null);
+            epic.setEndTime(LocalDateTime.now());
+            epic.setStartTime(LocalDateTime.now());
+            epic.setDuration(Duration.ZERO);
             return;
         }
         LocalDateTime startTime = getEpicSubtasksById(epic.getId()).getFirst().getStartTime();
@@ -351,8 +372,9 @@ public class InMemoryTaskManager implements TaskManager {
             return true;
         }
         for (Task treeTask : tasksStartTime) {
-            if (treeTask.getStartTime().isBefore(task.getStartTime()) && treeTask.getEndTime().isAfter(task.getStartTime())
-                    || treeTask.getStartTime().isAfter(task.getStartTime()) && treeTask.getEndTime().isBefore(task.getStartTime())) {
+            if (treeTask.getStartTime().isBefore(task.getEndTime()) && treeTask.getEndTime().isAfter(task.getStartTime())
+                    || task.getStartTime().isBefore(treeTask.getEndTime()) && task.getEndTime().isAfter(treeTask.getStartTime())
+            ) {
                 isNotIntersection = false;
                 break;
             }

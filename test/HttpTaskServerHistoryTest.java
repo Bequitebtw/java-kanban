@@ -1,16 +1,12 @@
+import TypeTokens.TaskListTypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
-import model.Epic;
-import model.Status;
-import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,9 +26,9 @@ public class HttpTaskServerHistoryTest {
     private Task task1 = new Task("TASK1", "DEKSTASK1",
             LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
     private Task task2 = new Task("TASK2", "DEKSTASK2",
-            LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
+            LocalDateTime.of(2024, 10, 11, 11, 11), Duration.ofHours(20));
     private Task task3 = new Task("TASK3", "DEKSTASK3",
-            LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
+            LocalDateTime.of(2024, 9, 11, 11, 11), Duration.ofHours(20));
 
     public HttpTaskServerHistoryTest() throws IOException {
     }

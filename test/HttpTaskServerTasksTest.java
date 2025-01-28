@@ -1,5 +1,5 @@
+import TypeTokens.TaskListTypeToken;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import manager.Managers;
 import manager.TaskManager;
 import model.Status;
@@ -19,10 +19,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TaskListTypeToken extends TypeToken<List<Task>> {
-    //класс для получения списка тасков из json
-}
-
 public class HttpTaskServerTasksTest {
     private final TaskManager manager = Managers.getDefault();
     private final HttpTaskServer taskServer = new HttpTaskServer(manager);
@@ -30,9 +26,9 @@ public class HttpTaskServerTasksTest {
     private Task task1 = new Task("TASK1", "DEKSTASK1",
             LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
     private Task task2 = new Task("TASK2", "DEKSTASK2",
-            LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
+            LocalDateTime.of(2024, 10, 11, 11, 11), Duration.ofHours(20));
     private Task task3 = new Task("TASK3", "DEKSTASK3",
-            LocalDateTime.of(2024, 11, 11, 11, 11), Duration.ofHours(20));
+            LocalDateTime.of(2024, 9, 11, 11, 11), Duration.ofHours(20));
 
     public HttpTaskServerTasksTest() throws IOException {
     }
@@ -90,8 +86,10 @@ public class HttpTaskServerTasksTest {
         //cоздаем таск
         manager.createTask(task1);
         //меняем статус
-        task1.setStatus(Status.DONE);
-        String taskJson = gson.toJson(task1);
+        Task task = new Task("TASK", "DESKTASK", LocalDateTime.of(2023, 10, 10, 10, 10), Duration.ofHours(10));
+        task.setStatus(Status.DONE);
+        task.setId(1);
+        String taskJson = gson.toJson(task);
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
@@ -105,6 +103,8 @@ public class HttpTaskServerTasksTest {
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         //проверяем изменился ли статус у задачи
         assertEquals(Status.DONE, tasksFromManager.getFirst().getStatus(), "Некорректное имя задачи");
+        assertEquals(LocalDateTime.of(2023, 10, 10, 10, 10),
+                tasksFromManager.getFirst().getStartTime(), "Некорректное время задачи");
     }
 
     @Test

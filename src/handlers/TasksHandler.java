@@ -10,11 +10,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-/*Еще вопрос насчет передачи объекта в json формате. Почему я могу передать только duration и startTime
-и этот объект создастся с полями name-null description-null status-null, как сделать их обязательными? Ведь нельзя
-создать объект без полей назания и описания по логике задания. Получется конструкторы никак не влияют на десериализацию
-объекта через Gson */
-
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -54,10 +49,18 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
             Task newTask = gson.fromJson(task, Task.class);
             Optional<Task> optionalTask = taskManager.getTaskById(newTask.getId());
             if (optionalTask.isEmpty()) {
-                taskManager.createTask(newTask);
-                sendCode201(exchange, gson.toJson("новый таск добавлен"));
+                if (taskManager.createTask(newTask) == null) {
+                    sendCode406(exchange, "таск пересекается с другими");
+                } else {
+                    sendCode201(exchange, gson.toJson("новый таск добавлен"));
+                }
             }
             if (optionalTask.isPresent()) {
+                if (taskManager.updateTask(newTask) == null) {
+                    sendCode406(exchange, "таск пересекается с другими");
+                } else {
+                    sendCode201(exchange, "таск обновлен");
+                }
                 taskManager.updateTask(newTask);
                 sendCode201(exchange, gson.toJson("таск обновлен"));
             }

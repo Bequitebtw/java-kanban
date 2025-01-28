@@ -3,7 +3,6 @@ import model.Subtask;
 import model.Task;
 import manager.InMemoryTaskManager;
 
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -15,18 +14,6 @@ public class TaskTracker {
             LocalDateTime.of(2024, 10, 10, 10, 10), Duration.ofHours(10));
 
     public static void main(String[] args) {
-
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createTask(task);
-        inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createEpic(epic);
-        inMemoryTaskManager.createEpic(epic);
-
 
     }
 

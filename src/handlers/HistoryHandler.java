@@ -20,7 +20,7 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetHistory(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 2) {
-            sendCode200(exchange, epicGson.toJson(taskManager.getHistory()));
+            sendCode200(exchange, gson.toJson(taskManager.getHistory()));
         } else {
             sendCode404(exchange, gson.toJson("такого пути не существует"));
         }

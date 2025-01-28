@@ -48,13 +48,19 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
             Subtask newSubtask = gson.fromJson(subtask, Subtask.class);
             Optional<Subtask> optionalSubtask = taskManager.getSubtaskById(newSubtask.getId());
             if (optionalSubtask.isPresent()) {
-                taskManager.updateSubtask(newSubtask);
-                sendCode201(exchange, gson.toJson("сабтаск обновлен"));
+                if (taskManager.updateSubtask(newSubtask) == null) {
+                    sendCode406(exchange, gson.toJson("сабтаск пересекается с другими"));
+                } else {
+                    sendCode201(exchange, gson.toJson("сабтаск обновлен"));
+                }
                 return;
             }
             if (optionalSubtask.isEmpty() && taskManager.getEpicById(newSubtask.getEpicId()).isPresent()) {
-                taskManager.createSubtask(newSubtask, newSubtask.getEpicId());
-                sendCode201(exchange, gson.toJson("новый сабтаск добавлен"));
+                if (taskManager.createSubtask(newSubtask, newSubtask.getEpicId()) == null) {
+                    sendCode406(exchange, gson.toJson("сабтаск пересекается с другими"));
+                } else {
+                    sendCode201(exchange, gson.toJson("сабтаск добавлен"));
+                }
             } else {
                 sendCode404(exchange, gson.toJson("нет такого эпика или он не был передан"));
             }
@@ -71,7 +77,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                     sendCode404(exchange, gson.toJson("такой подзадачи нет"));
                 } else {
                     taskManager.deleteSubtaskById(subtask.get().getId());
-                    sendCode200(exchange, "сабтаск успешно удален");
+                    sendCode200(exchange, gson.toJson("сабтаск успешно удален"));
                 }
             } catch (NumberFormatException e) {
                 sendCode404(exchange, gson.toJson("введите id подзадачи, которую вы запрашиваете"));

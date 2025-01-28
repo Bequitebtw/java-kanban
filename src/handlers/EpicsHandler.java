@@ -27,14 +27,14 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleGetEpics(HttpExchange exchange, String[] pathParts) throws IOException {
         if (pathParts.length == 2) {
-            sendCode200(exchange, epicGson.toJson(taskManager.getEpics()));
+            sendCode200(exchange, gson.toJson(taskManager.getEpics()));
         } else if (pathParts.length == 3) {
             try {
                 Optional<Epic> epic = taskManager.getEpicById(Integer.parseInt(pathParts[2]));
                 if (epic.isEmpty()) {
                     sendCode404(exchange, gson.toJson("такого эпика нет"));
                 } else {
-                    sendCode200(exchange, epicGson.toJson(epic.get()));
+                    sendCode200(exchange, gson.toJson(epic.get()));
                 }
             } catch (NumberFormatException e) {
                 sendCode404(exchange, gson.toJson("введите id эпика, который вы запрашиваете"));
@@ -58,7 +58,10 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private void handlePostEpics(HttpExchange exchange) throws IOException {
         String epic = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         try {
-            Epic newEpic = epicGson.fromJson(epic, Epic.class);
+            Epic newEpic = gson.fromJson(epic, Epic.class);
+            if (newEpic.getStartTime() == null || newEpic.getEndTime() == null || newEpic.getDuration() == null) {
+                throw new JsonSyntaxException("не переданы поля времени");
+            }
             Optional<Epic> optionalEpic = taskManager.getEpicById(newEpic.getId());
             if (optionalEpic.isEmpty()) {
                 taskManager.createEpic(newEpic);
@@ -69,7 +72,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                 sendCode201(exchange, gson.toJson("эпик обновлен"));
             }
         } catch (JsonSyntaxException e) {
-            sendCode404(exchange, gson.toJson("неправильно передан эпик"));
+            sendCode404(exchange, gson.toJson("неправильно передан эпик(сорее всего время)"));
         }
     }
 
