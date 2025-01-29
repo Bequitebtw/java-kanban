@@ -9,6 +9,7 @@
       <root url="jar://$PROJECT_DIR$/../m1-t23-junit/lib/junit-jupiter-api-5.4.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/../m1-t23-junit/lib/apiguardian-api-1.0.0.jar!/" />
       <root url="file://$PROJECT_DIR$/../m1-t23-junit/lib" />
+      <root url="jar://$PROJECT_DIR$/../m1-t25-api/lib/gson-2.9.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

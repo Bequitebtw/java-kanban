@@ -21,7 +21,7 @@ public class Task {
         status = Status.NEW;
     }
 
-    public Task(String name, String description,LocalDateTime startTime, Duration duration) {
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
         this.duration = duration;
@@ -73,7 +73,7 @@ public class Task {
     public LocalDateTime getEndTime() {
         try {
             return startTime.plus(duration);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new ManagerSaveException("Не установлена дата начала задачи и время на выполнение");
         }
     }

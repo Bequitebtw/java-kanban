@@ -16,6 +16,7 @@ import java.util.List;
 abstract class TaskManagerTest<T extends TaskManager> {
 
     protected abstract T getTaskManager();
+
     T taskManager;
     protected Task task = new Task("TASK1", "DESK1TASK");
     protected Task task2 = new Task("TASK2", "DESK2TASK");
@@ -26,7 +27,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected Subtask subtask3 = new Subtask("SUBTASK2", "DESK2SUBTASK");
 
     @BeforeEach
-    public void setTaskManager(){
+    public void setTaskManager() {
         taskManager = getTaskManager();
     }
 
@@ -41,7 +42,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void createEpicTest() {
         taskManager.createEpic(epic);
 
-        Assertions.assertEquals(epic, taskManager.getEpicById(1));
+        Assertions.assertEquals(epic, taskManager.getEpicById(1).get());
     }
 
     @Test
@@ -63,7 +64,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void getEpicByIdTest() {
         taskManager.createEpic(epic);
 
-        Assertions.assertEquals(epic, taskManager.getEpicById(1));
+        Assertions.assertEquals(epic, taskManager.getEpicById(1).get());
     }
 
     @Test
@@ -95,7 +96,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         epic1.setStatus(Status.DONE);
         taskManager.updateEpic(epic1);
 
-        Assertions.assertEquals(epic1, taskManager.getEpicById(1));
+        Assertions.assertEquals(epic1, taskManager.getEpicById(1).get());
     }
 
     @Test
@@ -124,7 +125,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
         taskManager.deleteEpicById(1);
 
-        Assertions.assertNull(taskManager.getEpicById(1));
+        Assertions.assertTrue(taskManager.getEpicById(1).isEmpty());
     }
 
     @Test
@@ -179,8 +180,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic2); // 2
         taskManager.clearEpics();
 
-        Assertions.assertNull(taskManager.getEpicById(1));
-        Assertions.assertNull(taskManager.getEpicById(2));
+        Assertions.assertTrue(taskManager.getEpicById(1).isEmpty());
+        Assertions.assertTrue(taskManager.getEpicById(2).isEmpty());
     }
 
     @Test
